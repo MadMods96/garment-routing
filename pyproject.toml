@@ -1,0 +1,39 @@
+[project]
+name = "garmentroute"
+version = "0.1.0"
+description = "Second-life garment routing from photos, condition labels, and a mock product passport."
+requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Madhusudan Pareek" }]
+dependencies = [
+  "numpy",
+  "pandas",
+  "pyarrow",
+  "pyyaml",
+  "scikit-learn",
+  "lightgbm",
+  "pillow",
+  "remotezip",
+  "requests",
+  "imagehash",
+  "matplotlib",
+  "scipy",
+  "torch",
+  "torchvision",
+  "timm",
+  "fastapi",
+  "uvicorn",
+  "python-multipart",
+  "gradio",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

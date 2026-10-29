@@ -1,0 +1,84 @@
+{
+  "n_rows": 32036,
+  "n_per_station": {
+    "station1": 21839,
+    "station3": 7516,
+    "station2": 2681
+  },
+  "n_gold": 399,
+  "n_gold_with_id": 291,
+  "usage_raw_counts": {
+    "Reuse": 19237,
+    "Export": 10163,
+    "Recycle": 2244,
+    "Remake": 157,
+    "Repair": 147,
+    "Energy recovery": 88
+  },
+  "usage_class_counts": {
+    "Reuse": 19237,
+    "Export": 10163,
+    "Recycle": 2244,
+    "Other": 392
+  },
+  "split_counts": {
+    "train": 16915,
+    "cross_site": 7355,
+    "val": 3619,
+    "test": 3613,
+    "gold": 399,
+    "duplicate": 135
+  },
+  "missing_rate": {
+    "usage": 0.0,
+    "condition": 0.0,
+    "pilling": 0.0,
+    "stains_3class": 0.07070171057560244,
+    "holes": 0.07070171057560244,
+    "smell": 0.07070171057560244,
+    "material": 0.037114496191784245,
+    "type": 0.0
+  },
+  "stains_legacy_n": 2265,
+  "mean_condition_by_usage": {
+    "Energy recovery": 1.6363636363636365,
+    "Export": 2.608186559086884,
+    "Recycle": 2.379233511586453,
+    "Remake": 2.643312101910828,
+    "Repair": 3.068027210884354,
+    "Reuse": 4.172636065914643
+  },
+  "condition_usage_correlation_ratio": 0.6971919165115662,
+  "duplicate_n": 135,
+  "front_in_archive_n": 31936,
+  "back_in_archive_n": 31936,
+  "gold_census": {
+    "n_split_rows": 399,
+    "n_json_files": 399,
+    "n_garments": 100,
+    "n_annotations_with_item_number": 291,
+    "mean_annotations_per_garment": 2.91,
+    "n_lowercase_annotations_of_same_garments": 107,
+    "n_other_numbered_comments": 0,
+    "n_unnumbered_comments": 1,
+    "unnumbered_comment_text": [
+      "Test for new update"
+    ]
+  },
+  "gold_annotations_per_item": {
+    "n_items": 100,
+    "mean": 2.91,
+    "min": 1,
+    "max": 5
+  },
+  "figures": {
+    "usage_counts": "reports\\figures\\usage_counts.png",
+    "usage_by_station": "reports\\figures\\usage_by_station.png",
+    "missingness": "reports\\figures\\missingness.png",
+    "condition_by_usage": "reports\\figures\\condition_by_usage.png",
+    "usage_examples": "reports\\figures\\usage_examples.png"
+  },
+  "duplicate_train_test_dropped": 13,
+  "duplicate_cross_split_dropped": 36,
+  "duplicate_within_split_dropped": 86
+}

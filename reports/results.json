@@ -1,0 +1,4030 @@
+{
+  "schema_version": 1,
+  "dataset": "clothing_v3",
+  "doi": "10.5281/zenodo.13788681",
+  "smoke": false,
+  "seed": 42,
+  "split_meta": {
+    "seed": 42,
+    "val_fraction": 0.15,
+    "test_fraction": 0.15,
+    "stratified": true,
+    "split_counts": {
+      "train": 16953,
+      "cross_site": 7416,
+      "test": 3634,
+      "val": 3634,
+      "gold": 399
+    }
+  },
+  "data": {
+    "n_rows": 32036,
+    "split_counts": {
+      "train": 16915,
+      "cross_site": 7355,
+      "val": 3619,
+      "test": 3613,
+      "gold": 399,
+      "duplicate": 135
+    },
+    "usage_raw_counts": {
+      "Reuse": 19237,
+      "Export": 10163,
+      "Recycle": 2244,
+      "Remake": 157,
+      "Repair": 147,
+      "Energy recovery": 88
+    }
+  },
+  "majority": {
+    "test": {
+      "usage_class": {
+        "n": 3613,
+        "accuracy": 0.48740658732355385,
+        "balanced_accuracy": 0.25,
+        "macro_f1": 0.16384443617417194,
+        "confusion_matrix": {
+          "labels": [
+            "Reuse",
+            "Export",
+            "Recycle",
+            "Other"
+          ],
+          "matrix": [
+            [
+              1761,
+              0,
+              0,
+              0
+            ],
+            [
+              1473,
+              0,
+              0,
+              0
+            ],
+            [
+              326,
+              0,
+              0,
+              0
+            ],
+            [
+              53,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "majority_label": "Reuse"
+      },
+      "usage": {
+        "n": 3613,
+        "accuracy": 0.48740658732355385,
+        "balanced_accuracy": 0.16666666666666666,
+        "macro_f1": 0.10922962411611463,
+        "confusion_matrix": {
+          "labels": [
+            "Reuse",
+            "Export",
+            "Recycle",
+            "Repair",
+            "Remake",
+            "Energy recovery"
+          ],
+          "matrix": [
+            [
+              1761,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1473,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              326,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              19,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              21,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              13,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "majority_label": "Reuse"
+      },
+      "stains_3class": {
+        "n": 3302,
+        "accuracy": 0.7026044821320412,
+        "balanced_accuracy": 0.3333333333333333,
+        "macro_f1": 0.2751096881299656,
+        "confusion_matrix": {
+          "labels": [
+            "None",
+            "Minor",
+            "Major"
+          ],
+          "matrix": [
+            [
+              2320,
+              0,
+              0
+            ],
+            [
+              568,
+              0,
+              0
+            ],
+            [
+              414,
+              0,
+              0
+            ]
+          ]
+        },
+        "majority_label": "None"
+      },
+      "holes": {
+        "n": 3302,
+        "accuracy": 0.9261053906723198,
+        "balanced_accuracy": 0.3333333333333333,
+        "macro_f1": 0.32054507337526206,
+        "confusion_matrix": {
+          "labels": [
+            "None",
+            "Minor",
+            "Major"
+          ],
+          "matrix": [
+            [
+              3058,
+              0,
+              0
+            ],
+            [
+              127,
+              0,
+              0
+            ],
+            [
+              117,
+              0,
+              0
+            ]
+          ]
+        },
+        "majority_label": "None"
+      },
+      "condition": {
+        "n": 3613,
+        "accuracy": 0.3575975643509549,
+        "balanced_accuracy": 0.2,
+        "macro_f1": 0.105361875637105,
+        "confusion_matrix": {
+          "labels": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "matrix": [
+            [
+              0,
+              0,
+              168,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              684,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1292,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              582,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              887,
+              0,
+              0
+            ]
+          ]
+        },
+        "mae": 0.9344035427622475,
+        "within_1_accuracy": 0.7079988928867976,
+        "majority_label": 3
+      },
+      "pilling": {
+        "n": 3613,
+        "accuracy": 0.5743149737060614,
+        "balanced_accuracy": 0.2,
+        "macro_f1": 0.14592123769338958,
+        "confusion_matrix": {
+          "labels": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "matrix": [
+            [
+              0,
+              0,
+              0,
+              0,
+              82
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              239
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              512
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              705
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              2075
+            ]
+          ]
+        },
+        "mae": 0.7677830058123443,
+        "within_1_accuracy": 0.7694436756158317,
+        "majority_label": 5
+      }
+    },
+    "cross_site": {
+      "usage_class": {
+        "n": 7355,
+        "accuracy": 0.975118966689327,
+        "balanced_accuracy": 0.25,
+        "macro_f1": 0.24685069181524058,
+        "confusion_matrix": {
+          "labels": [
+            "Reuse",
+            "Export",
+            "Recycle",
+            "Other"
+          ],
+          "matrix": [
+            [
+              7172,
+              0,
+              0,
+              0
+            ],
+            [
+              173,
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0,
+              0
+            ],
+            [
+              7,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "majority_label": "Reuse"
+      },
+      "usage": {
+        "n": 7355,
+        "accuracy": 0.975118966689327,
+        "balanced_accuracy": 0.16666666666666666,
+        "macro_f1": 0.16456712787682706,
+        "confusion_matrix": {
+          "labels": [
+            "Reuse",
+            "Export",
+            "Recycle",
+            "Repair",
+            "Remake",
+            "Energy recovery"
+          ],
+          "matrix": [
+            [
+              7172,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              173,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "majority_label": "Reuse"
+      },
+      "stains_3class": {
+        "n": 7355,
+        "accuracy": 0.9212780421481985,
+        "balanced_accuracy": 0.3333333333333333,
+        "macro_f1": 0.31967541811148065,
+        "confusion_matrix": {
+          "labels": [
+            "None",
+            "Minor",
+            "Major"
+          ],
+          "matrix": [
+            [
+              6776,
+              0,
+              0
+            ],
+            [
+              514,
+              0,
+              0
+            ],
+            [
+              65,
+              0,
+              0
+            ]
+          ]
+        },
+        "majority_label": "None"
+      },
+      "holes": {
+        "n": 7355,
+        "accuracy": 0.9842284160435079,
+        "balanced_accuracy": 0.3333333333333333,
+        "macro_f1": 0.33068384267507195,
+        "confusion_matrix": {
+          "labels": [
+            "None",
+            "Minor",
+            "Major"
+          ],
+          "matrix": [
+            [
+              7239,
+              0,
+              0
+            ],
+            [
+              97,
+              0,
+              0
+            ],
+            [
+              19,
+              0,
+              0
+            ]
+          ]
+        },
+        "majority_label": "None"
+      },
+      "condition": {
+        "n": 7355,
+        "accuracy": 0.17117607070020394,
+        "balanced_accuracy": 0.2,
+        "macro_f1": 0.058462967262595776,
+        "confusion_matrix": {
+          "labels": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "matrix": [
+            [
+              0,
+              0,
+              36,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              232,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1259,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              3852,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1976,
+              0,
+              0
+            ]
+          ]
+        },
+        "mae": 1.1023793337865397,
+        "within_1_accuracy": 0.7264445955132562,
+        "majority_label": 3
+      },
+      "pilling": {
+        "n": 7355,
+        "accuracy": 0.32671651937457513,
+        "balanced_accuracy": 0.2,
+        "macro_f1": 0.09850379176060668,
+        "confusion_matrix": {
+          "labels": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "matrix": [
+            [
+              0,
+              0,
+              0,
+              0,
+              98
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              496
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              1314
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              3044
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              2403
+            ]
+          ]
+        },
+        "mae": 1.0267845003399048,
+        "within_1_accuracy": 0.7405846363018355,
+        "majority_label": 5
+      }
+    },
+    "has_stain": {
+      "test": {
+        "n": 3613,
+        "accuracy": 0.6955438693606422,
+        "balanced_accuracy": 0.5,
+        "macro_f1": 0.41021873979758405,
+        "confusion_matrix": {
+          "labels": [
+            "False",
+            "True"
+          ],
+          "matrix": [
+            [
+              2513,
+              0
+            ],
+            [
+              1100,
+              0
+            ]
+          ]
+        },
+        "majority_label": false
+      },
+      "cross_site": {
+        "n": 7355,
+        "accuracy": 0.9212780421481985,
+        "balanced_accuracy": 0.5,
+        "macro_f1": 0.479513127167221,
+        "confusion_matrix": {
+          "labels": [
+            "False",
+            "True"
+          ],
+          "matrix": [
+            [
+              6776,
+              0
+            ],
+            [
+              579,
+              0
+            ]
+          ]
+        },
+        "majority_label": false
+      }
+    },
+    "fit_on": "train"
+  },
+  "gold": {
+    "n": 399,
+    "expert_vs_expert_usage": {
+      "n_items": 100,
+      "n_items_with_pairs": 99,
+      "n_pairs": 292,
+      "raw_agreement": 0.523972602739726,
+      "cohen_kappa": 0.19290500904770425
+    },
+    "expert_vs_expert_condition": {
+      "n_items": 100,
+      "n_items_with_pairs": 99,
+      "n_pairs": 292,
+      "raw_agreement": 0.2945205479452055,
+      "cohen_kappa": 0.09813035069043585,
+      "cohen_kappa_quadratic": 0.3080722436557245
+    },
+    "site_agreement": {
+      "n_garments": 96,
+      "definition": "Wargön is station 1 and station 2. Myrorna is station 3. Cross-site pairs join every Wargön annotation to every Myrorna annotation of the same gold id. Within-Wargön pairs are unordered pairs of Wargön annotations on those garments. Same view means the condition scores are equal. Same route means the usage labels are equal.",
+      "cross_site": {
+        "usage": {
+          "n_pairs": 189,
+          "raw_agreement": 0.5396825396825397,
+          "cohen_kappa": 0.18554658477388675,
+          "confusion_matrix": {
+            "rows": "wargon",
+            "columns": "myrorna",
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                89,
+                3,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                30,
+                13,
+                4,
+                0,
+                0,
+                0
+              ],
+              [
+                23,
+                10,
+                0,
+                0,
+                1,
+                0
+              ],
+              [
+                9,
+                6,
+                0,
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          }
+        },
+        "condition": {
+          "n_pairs": 189,
+          "raw_agreement": 0.31216931216931215,
+          "cohen_kappa": 0.12838341196920788,
+          "cohen_kappa_quadratic": 0.27913963810174114,
+          "mean_difference_myrorna_minus_wargon": -0.5661375661375662,
+          "mean_absolute_difference": 1.0846560846560847
+        }
+      },
+      "within_wargon": {
+        "usage": {
+          "n_pairs": 99,
+          "raw_agreement": 0.48484848484848486,
+          "cohen_kappa": 0.22573224965496086
+        },
+        "condition": {
+          "n_pairs": 99,
+          "raw_agreement": 0.26262626262626265,
+          "cohen_kappa": 0.05689677671930071,
+          "cohen_kappa_quadratic": 0.3098112565890154,
+          "mean_absolute_difference": 1.2323232323232323
+        }
+      },
+      "view_versus_route": {
+        "n_pairs": 189,
+        "n_garments": 96,
+        "same_view_same_route": 24,
+        "same_view_different_route": 35,
+        "different_view_same_route": 78,
+        "different_view_different_route": 52
+      }
+    },
+    "model_vs_expert": null
+  },
+  "router": {
+    "config": "configs\\router.yaml",
+    "placeholder_notice": "Every number in this file is an illustrative placeholder for a portfolio demo. These are not life-cycle assessment results, not a sorting partner's prices, and not measured repair capacity.\n",
+    "on_expert_attributes": {
+      "test": {
+        "n": 3613,
+        "accuracy": 0.4760586769997232,
+        "balanced_accuracy": 0.17146358229474878,
+        "macro_f1": 0.12717935240460274,
+        "confusion_matrix": {
+          "labels": [
+            "Reuse",
+            "Export",
+            "Recycle",
+            "Repair",
+            "Remake",
+            "Energy recovery"
+          ],
+          "matrix": [
+            [
+              1719,
+              0,
+              0,
+              42,
+              0,
+              0
+            ],
+            [
+              813,
+              0,
+              0,
+              660,
+              0,
+              0
+            ],
+            [
+              192,
+              0,
+              0,
+              134,
+              0,
+              0
+            ],
+            [
+              18,
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0,
+              11,
+              0,
+              0
+            ],
+            [
+              6,
+              0,
+              0,
+              7,
+              0,
+              0
+            ]
+          ]
+        },
+        "usage_class_agreement": {
+          "n": 3613,
+          "accuracy": 0.48104068641018544,
+          "balanced_accuracy": 0.33366012021471503,
+          "macro_f1": 0.20065950129312068,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Other"
+            ],
+            "matrix": [
+              [
+                1719,
+                0,
+                0,
+                42
+              ],
+              [
+                813,
+                0,
+                0,
+                660
+              ],
+              [
+                192,
+                0,
+                0,
+                134
+              ],
+              [
+                34,
+                0,
+                0,
+                19
+              ]
+            ]
+          }
+        },
+        "abstained": 0,
+        "route_counts": {
+          "Repair": 855,
+          "Reuse": 2758
+        },
+        "common_disagreements": [
+          {
+            "expert": "Export",
+            "router": "Reuse",
+            "n": 813,
+            "note": "expert Export, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_04_04_11_52_27",
+                "front_path": "station1/apr2023/front_2023_04_04_11_52_27.jpg"
+              },
+              {
+                "item_id": "2023_04_04_12_13_48",
+                "front_path": "station1/apr2023/front_2023_04_04_12_13_48.jpg"
+              },
+              {
+                "item_id": "2023_04_14_06_33_43",
+                "front_path": "station1/apr2023/front_2023_04_14_06_33_43.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Repair",
+            "n": 660,
+            "note": "expert Export, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_04_11_11_09_21",
+                "front_path": "station1/apr2023/front_2023_04_11_11_09_21.jpg"
+              },
+              {
+                "item_id": "2023_04_11_11_46_19",
+                "front_path": "station1/apr2023/front_2023_04_11_11_46_19.jpg"
+              },
+              {
+                "item_id": "2023_04_18_11_53_15",
+                "front_path": "station1/apr2023/front_2023_04_18_11_53_15.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Recycle",
+            "router": "Reuse",
+            "n": 192,
+            "note": "expert Recycle, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_04_14_06_07_21",
+                "front_path": "station1/apr2023/front_2023_04_14_06_07_21.jpg"
+              },
+              {
+                "item_id": "2023_04_18_06_23_56",
+                "front_path": "station1/apr2023/front_2023_04_18_06_23_56.jpg"
+              },
+              {
+                "item_id": "2023_04_20_06_40_33",
+                "front_path": "station1/apr2023/front_2023_04_20_06_40_33.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Recycle",
+            "router": "Repair",
+            "n": 134,
+            "note": "expert Recycle, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_04_18_06_46_25",
+                "front_path": "station1/apr2023/front_2023_04_18_06_46_25.jpg"
+              },
+              {
+                "item_id": "2023_04_20_09_30_47",
+                "front_path": "station1/apr2023/front_2023_04_20_09_30_47.jpg"
+              },
+              {
+                "item_id": "2023_04_25_06_32_44",
+                "front_path": "station1/apr2023/front_2023_04_25_06_32_44.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Reuse",
+            "router": "Repair",
+            "n": 42,
+            "note": "expert Reuse, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_04_18_13_41_52",
+                "front_path": "station1/apr2023/front_2023_04_18_13_41_52.jpg"
+              },
+              {
+                "item_id": "2023_04_21_11_07_36",
+                "front_path": "station1/apr2023/front_2023_04_21_11_07_36.jpg"
+              },
+              {
+                "item_id": "2023_04_25_08_54_49",
+                "front_path": "station1/apr2023/front_2023_04_25_08_54_49.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Repair",
+            "router": "Reuse",
+            "n": 18,
+            "note": "expert Repair, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_08_18_07_00_16",
+                "front_path": "station1/aug2023/front_2023_08_18_07_00_16.jpg"
+              },
+              {
+                "item_id": "2023_08_25_11_03_23",
+                "front_path": "station1/aug2023/front_2023_08_25_11_03_23.jpg"
+              },
+              {
+                "item_id": "2022_12_06_10_37_01",
+                "front_path": "station1/dec2022/front_2022_12_06_10_37_01.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Remake",
+            "router": "Repair",
+            "n": 11,
+            "note": "expert Remake, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_08_10_08_12_52",
+                "front_path": "station1/aug2023/front_2023_08_10_08_12_52.jpg"
+              },
+              {
+                "item_id": "2023_08_10_09_21_50",
+                "front_path": "station1/aug2023/front_2023_08_10_09_21_50.jpg"
+              },
+              {
+                "item_id": "2023_12_04_07_20_19",
+                "front_path": "station1/dec2023/front_2023_12_04_07_20_19.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Remake",
+            "router": "Reuse",
+            "n": 10,
+            "note": "expert Remake, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_08_01_06_14_28",
+                "front_path": "station1/aug2023/front_2023_08_01_06_14_28.jpg"
+              },
+              {
+                "item_id": "2023_08_03_07_26_24",
+                "front_path": "station1/aug2023/front_2023_08_03_07_26_24.jpg"
+              },
+              {
+                "item_id": "2023_08_22_11_57_59",
+                "front_path": "station1/aug2023/front_2023_08_22_11_57_59.jpg"
+              }
+            ]
+          }
+        ],
+        "inputs": "expert_damage_labels_and_dataset_material_as_mock_passport",
+        "capacity": false
+      },
+      "test_capacity": {
+        "n": 3613,
+        "accuracy": 0.49487960143924714,
+        "balanced_accuracy": 0.18588620288017244,
+        "macro_f1": 0.13741818814075624,
+        "confusion_matrix": {
+          "labels": [
+            "Reuse",
+            "Export",
+            "Recycle",
+            "Repair",
+            "Remake",
+            "Energy recovery"
+          ],
+          "matrix": [
+            [
+              1748,
+              6,
+              7,
+              0,
+              0,
+              0
+            ],
+            [
+              1175,
+              0,
+              252,
+              33,
+              13,
+              0
+            ],
+            [
+              277,
+              0,
+              40,
+              7,
+              2,
+              0
+            ],
+            [
+              19,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              15,
+              0,
+              6,
+              0,
+              0,
+              0
+            ],
+            [
+              7,
+              0,
+              6,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "usage_class_agreement": {
+          "n": 3613,
+          "accuracy": 0.49487960143924714,
+          "balanced_accuracy": 0.27882930432025865,
+          "macro_f1": 0.20612728221113436,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Other"
+            ],
+            "matrix": [
+              [
+                1748,
+                6,
+                7,
+                0
+              ],
+              [
+                1175,
+                0,
+                252,
+                46
+              ],
+              [
+                277,
+                0,
+                40,
+                9
+              ],
+              [
+                41,
+                0,
+                12,
+                0
+              ]
+            ]
+          }
+        },
+        "abstained": 0,
+        "route_counts": {
+          "Export": 6,
+          "Recycle": 311,
+          "Remake": 15,
+          "Repair": 40,
+          "Reuse": 3241
+        },
+        "common_disagreements": [
+          {
+            "expert": "Export",
+            "router": "Reuse",
+            "n": 1175,
+            "note": "expert Export, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_04_04_11_52_27",
+                "front_path": "station1/apr2023/front_2023_04_04_11_52_27.jpg"
+              },
+              {
+                "item_id": "2023_04_04_12_13_48",
+                "front_path": "station1/apr2023/front_2023_04_04_12_13_48.jpg"
+              },
+              {
+                "item_id": "2023_04_14_06_33_43",
+                "front_path": "station1/apr2023/front_2023_04_14_06_33_43.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Recycle",
+            "router": "Reuse",
+            "n": 277,
+            "note": "expert Recycle, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_04_14_06_07_21",
+                "front_path": "station1/apr2023/front_2023_04_14_06_07_21.jpg"
+              },
+              {
+                "item_id": "2023_04_18_06_23_56",
+                "front_path": "station1/apr2023/front_2023_04_18_06_23_56.jpg"
+              },
+              {
+                "item_id": "2023_04_18_06_46_25",
+                "front_path": "station1/apr2023/front_2023_04_18_06_46_25.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Recycle",
+            "n": 252,
+            "note": "expert Export, router Recycle",
+            "examples": [
+              {
+                "item_id": "2024_04_26_09_49_56",
+                "front_path": "station1/apr2024/front_2024_04_26_09_49_56.jpg"
+              },
+              {
+                "item_id": "2023_08_02_07_05_37",
+                "front_path": "station1/aug2023/front_2023_08_02_07_05_37.jpg"
+              },
+              {
+                "item_id": "2023_08_03_05_32_54",
+                "front_path": "station1/aug2023/front_2023_08_03_05_32_54.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Repair",
+            "n": 33,
+            "note": "expert Export, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_04_11_11_09_21",
+                "front_path": "station1/apr2023/front_2023_04_11_11_09_21.jpg"
+              },
+              {
+                "item_id": "2023_04_21_09_11_58",
+                "front_path": "station1/apr2023/front_2023_04_21_09_11_58.jpg"
+              },
+              {
+                "item_id": "2023_04_21_13_02_58",
+                "front_path": "station1/apr2023/front_2023_04_21_13_02_58.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Repair",
+            "router": "Reuse",
+            "n": 19,
+            "note": "expert Repair, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_08_18_07_00_16",
+                "front_path": "station1/aug2023/front_2023_08_18_07_00_16.jpg"
+              },
+              {
+                "item_id": "2023_08_25_11_03_23",
+                "front_path": "station1/aug2023/front_2023_08_25_11_03_23.jpg"
+              },
+              {
+                "item_id": "2022_12_06_10_37_01",
+                "front_path": "station1/dec2022/front_2022_12_06_10_37_01.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Remake",
+            "router": "Reuse",
+            "n": 15,
+            "note": "expert Remake, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_08_01_06_14_28",
+                "front_path": "station1/aug2023/front_2023_08_01_06_14_28.jpg"
+              },
+              {
+                "item_id": "2023_08_03_07_26_24",
+                "front_path": "station1/aug2023/front_2023_08_03_07_26_24.jpg"
+              },
+              {
+                "item_id": "2023_08_10_08_12_52",
+                "front_path": "station1/aug2023/front_2023_08_10_08_12_52.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Remake",
+            "n": 13,
+            "note": "expert Export, router Remake",
+            "examples": [
+              {
+                "item_id": "2023_04_11_11_46_19",
+                "front_path": "station1/apr2023/front_2023_04_11_11_46_19.jpg"
+              },
+              {
+                "item_id": "2023_04_18_11_53_15",
+                "front_path": "station1/apr2023/front_2023_04_18_11_53_15.jpg"
+              },
+              {
+                "item_id": "2023_04_20_09_49_59",
+                "front_path": "station1/apr2023/front_2023_04_20_09_49_59.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Reuse",
+            "router": "Recycle",
+            "n": 7,
+            "note": "expert Reuse, router Recycle",
+            "examples": [
+              {
+                "item_id": "2023_08_15_09_44_52",
+                "front_path": "station1/aug2023/front_2023_08_15_09_44_52.jpg"
+              },
+              {
+                "item_id": "2023_08_17_06_47_59",
+                "front_path": "station1/aug2023/front_2023_08_17_06_47_59.jpg"
+              },
+              {
+                "item_id": "2024_02_01_09_50_23",
+                "front_path": "station1/feb2024/front_2024_02_01_09_50_23.jpg"
+              }
+            ]
+          }
+        ],
+        "inputs": "expert_damage_labels_and_dataset_material_as_mock_passport",
+        "capacity": true
+      },
+      "cross_site": {
+        "n": 7355,
+        "accuracy": 0.9505098572399728,
+        "balanced_accuracy": 0.28739077895519616,
+        "macro_f1": 0.16713170498494792,
+        "confusion_matrix": {
+          "labels": [
+            "Reuse",
+            "Export",
+            "Recycle",
+            "Repair",
+            "Remake",
+            "Energy recovery"
+          ],
+          "matrix": [
+            [
+              6988,
+              0,
+              0,
+              184,
+              0,
+              0
+            ],
+            [
+              124,
+              0,
+              0,
+              49,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              2,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "usage_class_agreement": {
+          "n": 7355,
+          "accuracy": 0.9507817811012916,
+          "balanced_accuracy": 0.4221575970042228,
+          "macro_f1": 0.25465575365912035,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Other"
+            ],
+            "matrix": [
+              [
+                6988,
+                0,
+                0,
+                184
+              ],
+              [
+                124,
+                0,
+                0,
+                49
+              ],
+              [
+                0,
+                0,
+                0,
+                3
+              ],
+              [
+                2,
+                0,
+                0,
+                5
+              ]
+            ]
+          }
+        },
+        "abstained": 0,
+        "route_counts": {
+          "Repair": 241,
+          "Reuse": 7114
+        },
+        "common_disagreements": [
+          {
+            "expert": "Reuse",
+            "router": "Repair",
+            "n": 184,
+            "note": "expert Reuse, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_08_29_08_17_41",
+                "front_path": "station3/aug2023/front_2023_08_29_08_17_41.jpg"
+              },
+              {
+                "item_id": "2023_08_29_08_36_35",
+                "front_path": "station3/aug2023/front_2023_08_29_08_36_35.jpg"
+              },
+              {
+                "item_id": "2023_08_29_11_31_52",
+                "front_path": "station3/aug2023/front_2023_08_29_11_31_52.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Reuse",
+            "n": 124,
+            "note": "expert Export, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_08_29_07_48_59",
+                "front_path": "station3/aug2023/front_2023_08_29_07_48_59.jpg"
+              },
+              {
+                "item_id": "2023_08_29_07_56_09",
+                "front_path": "station3/aug2023/front_2023_08_29_07_56_09.jpg"
+              },
+              {
+                "item_id": "2023_08_29_09_13_55",
+                "front_path": "station3/aug2023/front_2023_08_29_09_13_55.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Repair",
+            "n": 49,
+            "note": "expert Export, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_08_28_08_49_24",
+                "front_path": "station3/aug2023/front_2023_08_28_08_49_24.jpg"
+              },
+              {
+                "item_id": "2023_08_31_13_32_16",
+                "front_path": "station3/aug2023/front_2023_08_31_13_32_16.jpg"
+              },
+              {
+                "item_id": "2023_12_01_10_34_33",
+                "front_path": "station3/dec2023/front_2023_12_01_10_34_33.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Recycle",
+            "router": "Repair",
+            "n": 3,
+            "note": "expert Recycle, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_11_20_09_37_16",
+                "front_path": "station3/nov2023/front_2023_11_20_09_37_16.jpg"
+              },
+              {
+                "item_id": "2023_10_18_05_51_10",
+                "front_path": "station3/oct2023/front_2023_10_18_05_51_10.jpg"
+              },
+              {
+                "item_id": "2023_10_18_10_54_28",
+                "front_path": "station3/oct2023/front_2023_10_18_10_54_28.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Remake",
+            "router": "Repair",
+            "n": 2,
+            "note": "expert Remake, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_10_18_08_52_04",
+                "front_path": "station3/oct2023/front_2023_10_18_08_52_04.jpg"
+              },
+              {
+                "item_id": "2023_09_21_05_40_41",
+                "front_path": "station3/sep2023/front_2023_09_21_05_40_41.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Repair",
+            "router": "Reuse",
+            "n": 1,
+            "note": "expert Repair, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_06_21_10_23_57",
+                "front_path": "station3/jun2023/front_2023_06_21_10_23_57.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Energy recovery",
+            "router": "Reuse",
+            "n": 1,
+            "note": "expert Energy recovery, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_10_12_08_40_48",
+                "front_path": "station3/oct2023/front_2023_10_12_08_40_48.jpg"
+              }
+            ]
+          }
+        ],
+        "inputs": "expert_damage_labels_and_dataset_material_as_mock_passport",
+        "capacity": false
+      },
+      "cross_site_capacity": {
+        "n": 7355,
+        "accuracy": 0.9695445275322909,
+        "balanced_accuracy": 0.22312650960829974,
+        "macro_f1": 0.18896221332922888,
+        "confusion_matrix": {
+          "labels": [
+            "Reuse",
+            "Export",
+            "Recycle",
+            "Repair",
+            "Remake",
+            "Energy recovery"
+          ],
+          "matrix": [
+            [
+              7128,
+              3,
+              6,
+              30,
+              5,
+              0
+            ],
+            [
+              147,
+              2,
+              6,
+              9,
+              9,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "usage_class_agreement": {
+          "n": 7355,
+          "accuracy": 0.9695445275322909,
+          "balanced_accuracy": 0.33468976441244963,
+          "macro_f1": 0.2834433199938433,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Other"
+            ],
+            "matrix": [
+              [
+                7128,
+                3,
+                6,
+                35
+              ],
+              [
+                147,
+                2,
+                6,
+                18
+              ],
+              [
+                0,
+                0,
+                1,
+                2
+              ],
+              [
+                7,
+                0,
+                0,
+                0
+              ]
+            ]
+          }
+        },
+        "abstained": 0,
+        "route_counts": {
+          "Export": 5,
+          "Recycle": 13,
+          "Remake": 15,
+          "Repair": 40,
+          "Reuse": 7282
+        },
+        "common_disagreements": [
+          {
+            "expert": "Export",
+            "router": "Reuse",
+            "n": 147,
+            "note": "expert Export, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_08_29_07_48_59",
+                "front_path": "station3/aug2023/front_2023_08_29_07_48_59.jpg"
+              },
+              {
+                "item_id": "2023_08_29_07_56_09",
+                "front_path": "station3/aug2023/front_2023_08_29_07_56_09.jpg"
+              },
+              {
+                "item_id": "2023_08_29_09_13_55",
+                "front_path": "station3/aug2023/front_2023_08_29_09_13_55.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Reuse",
+            "router": "Repair",
+            "n": 30,
+            "note": "expert Reuse, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_12_04_12_42_31",
+                "front_path": "station3/dec2023/front_2023_12_04_12_42_31.jpg"
+              },
+              {
+                "item_id": "2023_07_03_07_28_22",
+                "front_path": "station3/jul2023/front_2023_07_03_07_28_22.jpg"
+              },
+              {
+                "item_id": "2023_07_05_10_46_31",
+                "front_path": "station3/jul2023/front_2023_07_05_10_46_31.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Repair",
+            "n": 9,
+            "note": "expert Export, router Repair",
+            "examples": [
+              {
+                "item_id": "2023_08_28_08_49_24",
+                "front_path": "station3/aug2023/front_2023_08_28_08_49_24.jpg"
+              },
+              {
+                "item_id": "2023_08_31_13_32_16",
+                "front_path": "station3/aug2023/front_2023_08_31_13_32_16.jpg"
+              },
+              {
+                "item_id": "2023_11_07_14_39_24",
+                "front_path": "station3/nov2023/front_2023_11_07_14_39_24.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Remake",
+            "n": 9,
+            "note": "expert Export, router Remake",
+            "examples": [
+              {
+                "item_id": "2023_12_04_12_59_08",
+                "front_path": "station3/dec2023/front_2023_12_04_12_59_08.jpg"
+              },
+              {
+                "item_id": "2023_11_06_12_08_51",
+                "front_path": "station3/nov2023/front_2023_11_06_12_08_51.jpg"
+              },
+              {
+                "item_id": "2023_11_09_09_21_02",
+                "front_path": "station3/nov2023/front_2023_11_09_09_21_02.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Export",
+            "router": "Recycle",
+            "n": 6,
+            "note": "expert Export, router Recycle",
+            "examples": [
+              {
+                "item_id": "2023_10_06_07_25_07",
+                "front_path": "station3/oct2023/front_2023_10_06_07_25_07.jpg"
+              },
+              {
+                "item_id": "2023_10_16_07_37_16",
+                "front_path": "station3/oct2023/front_2023_10_16_07_37_16.jpg"
+              },
+              {
+                "item_id": "2023_10_20_09_19_05",
+                "front_path": "station3/oct2023/front_2023_10_20_09_19_05.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Reuse",
+            "router": "Recycle",
+            "n": 6,
+            "note": "expert Reuse, router Recycle",
+            "examples": [
+              {
+                "item_id": "2023_10_06_11_36_26",
+                "front_path": "station3/oct2023/front_2023_10_06_11_36_26.jpg"
+              },
+              {
+                "item_id": "2023_10_06_11_56_51",
+                "front_path": "station3/oct2023/front_2023_10_06_11_56_51.jpg"
+              },
+              {
+                "item_id": "2023_09_20_08_33_17",
+                "front_path": "station3/sep2023/front_2023_09_20_08_33_17.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Reuse",
+            "router": "Remake",
+            "n": 5,
+            "note": "expert Reuse, router Remake",
+            "examples": [
+              {
+                "item_id": "2023_12_04_12_29_51",
+                "front_path": "station3/dec2023/front_2023_12_04_12_29_51.jpg"
+              },
+              {
+                "item_id": "2023_12_04_12_59_02",
+                "front_path": "station3/dec2023/front_2023_12_04_12_59_02.jpg"
+              },
+              {
+                "item_id": "2023_11_07_10_07_13",
+                "front_path": "station3/nov2023/front_2023_11_07_10_07_13.jpg"
+              }
+            ]
+          },
+          {
+            "expert": "Repair",
+            "router": "Reuse",
+            "n": 4,
+            "note": "expert Repair, router Reuse",
+            "examples": [
+              {
+                "item_id": "2023_06_19_11_19_18",
+                "front_path": "station3/jun2023/front_2023_06_19_11_19_18.jpg"
+              },
+              {
+                "item_id": "2023_06_21_10_23_57",
+                "front_path": "station3/jun2023/front_2023_06_21_10_23_57.jpg"
+              },
+              {
+                "item_id": "2023_10_20_08_03_04",
+                "front_path": "station3/oct2023/front_2023_10_20_08_03_04.jpg"
+              }
+            ]
+          }
+        ],
+        "inputs": "expert_damage_labels_and_dataset_material_as_mock_passport",
+        "capacity": true
+      }
+    },
+    "on_predicted_attributes": null
+  },
+  "attribute_baselines": {
+    "target": "usage",
+    "inputs": "annotation attributes only: condition, pilling, stains, holes, material, type, brand frequency, trend",
+    "features": [
+      "condition",
+      "pilling",
+      "stains",
+      "holes",
+      "material",
+      "type",
+      "brand_frequency",
+      "trend"
+    ],
+    "brand_frequency": "proportion of training rows with that brand string; a blank brand is one string; a brand absent from train is 0",
+    "fit_on": "train",
+    "early_stopping_split": "val",
+    "importance_method": "permutation",
+    "importance_split": "val",
+    "seed": 42,
+    "n_train": 16915,
+    "n_val": 3619,
+    "note": "Photographs are not used. Macro-F1, all 6 expert classes, is the ceiling for a model that is given these annotation attributes and predicts usage. Material, type, brand frequency, and trend are annotation fields.",
+    "models": {
+      "logistic_regression": {
+        "hyperparameters": {
+          "solver": "lbfgs",
+          "l1_ratio": 0.0,
+          "C": 1.0,
+          "class_weight": "balanced",
+          "max_iter": 300,
+          "tol": 0.001
+        },
+        "splits": {
+          "test": {
+            "n": 3613,
+            "accuracy": 0.6487683365624135,
+            "balanced_accuracy": 0.5141078765433569,
+            "macro_f1": 0.35327575350837903,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Repair",
+                "Remake",
+                "Energy recovery"
+              ],
+              "matrix": [
+                [
+                  1382,
+                  143,
+                  37,
+                  71,
+                  126,
+                  2
+                ],
+                [
+                  115,
+                  778,
+                  184,
+                  64,
+                  225,
+                  107
+                ],
+                [
+                  15,
+                  38,
+                  160,
+                  35,
+                  58,
+                  20
+                ],
+                [
+                  5,
+                  2,
+                  2,
+                  10,
+                  0,
+                  0
+                ],
+                [
+                  2,
+                  4,
+                  2,
+                  1,
+                  11,
+                  1
+                ],
+                [
+                  1,
+                  7,
+                  0,
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "usage_class": {
+              "n": 3613,
+              "accuracy": 0.6498754497647384,
+              "balanced_accuracy": 0.5830136505000388,
+              "macro_f1": 0.4999682874938616,
+              "confusion_matrix": {
+                "labels": [
+                  "Reuse",
+                  "Export",
+                  "Recycle",
+                  "Other"
+                ],
+                "matrix": [
+                  [
+                    1382,
+                    143,
+                    37,
+                    199
+                  ],
+                  [
+                    115,
+                    778,
+                    184,
+                    396
+                  ],
+                  [
+                    15,
+                    38,
+                    160,
+                    113
+                  ],
+                  [
+                    8,
+                    13,
+                    4,
+                    28
+                  ]
+                ]
+              }
+            }
+          },
+          "cross_site": {
+            "n": 7355,
+            "accuracy": 0.7824609109449354,
+            "balanced_accuracy": 0.23837133704504887,
+            "macro_f1": 0.16929773962620145,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Repair",
+                "Remake",
+                "Energy recovery"
+              ],
+              "matrix": [
+                [
+                  5687,
+                  819,
+                  109,
+                  201,
+                  344,
+                  12
+                ],
+                [
+                  61,
+                  67,
+                  13,
+                  4,
+                  25,
+                  3
+                ],
+                [
+                  0,
+                  2,
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  1,
+                  0,
+                  1,
+                  1,
+                  0
+                ],
+                [
+                  1,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            },
+            "usage_class": {
+              "n": 7355,
+              "accuracy": 0.7825968728755949,
+              "balanced_accuracy": 0.3664855769961447,
+              "macro_f1": 0.2532351061401528,
+              "confusion_matrix": {
+                "labels": [
+                  "Reuse",
+                  "Export",
+                  "Recycle",
+                  "Other"
+                ],
+                "matrix": [
+                  [
+                    5687,
+                    819,
+                    109,
+                    557
+                  ],
+                  [
+                    61,
+                    67,
+                    13,
+                    32
+                  ],
+                  [
+                    0,
+                    2,
+                    0,
+                    1
+                  ],
+                  [
+                    2,
+                    2,
+                    1,
+                    2
+                  ]
+                ]
+              }
+            }
+          }
+        },
+        "permutation_importance": {
+          "split": "val",
+          "scoring": "macro_f1",
+          "repeats": 5,
+          "baseline_macro_f1": 0.3547599103785712,
+          "features": [
+            {
+              "feature": "condition",
+              "mean_macro_f1_drop": 0.10694134686928011,
+              "std_macro_f1_drop": 0.002286645317970342
+            },
+            {
+              "feature": "material",
+              "mean_macro_f1_drop": 0.08177919366391863,
+              "std_macro_f1_drop": 0.004669478554152104
+            },
+            {
+              "feature": "stains",
+              "mean_macro_f1_drop": 0.022788929133258327,
+              "std_macro_f1_drop": 0.0030397977153412805
+            },
+            {
+              "feature": "type",
+              "mean_macro_f1_drop": 0.012706127076327779,
+              "std_macro_f1_drop": 0.005940586244402459
+            },
+            {
+              "feature": "pilling",
+              "mean_macro_f1_drop": 0.008204343252457436,
+              "std_macro_f1_drop": 0.0015738904045354825
+            },
+            {
+              "feature": "trend",
+              "mean_macro_f1_drop": 0.00801237866314577,
+              "std_macro_f1_drop": 0.002477752192687221
+            },
+            {
+              "feature": "brand_frequency",
+              "mean_macro_f1_drop": 0.005161917847804021,
+              "std_macro_f1_drop": 0.0024015993554799787
+            },
+            {
+              "feature": "holes",
+              "mean_macro_f1_drop": 0.001901694536023324,
+              "std_macro_f1_drop": 0.0017627304231219148
+            }
+          ]
+        },
+        "n_iter": 86,
+        "converged": true
+      },
+      "lightgbm": {
+        "hyperparameters": {
+          "n_estimators": 400,
+          "learning_rate": 0.05,
+          "num_leaves": 31,
+          "min_child_samples": 20,
+          "subsample": 0.9,
+          "colsample_bytree": 0.9,
+          "class_weight": "balanced",
+          "early_stopping_rounds": 40
+        },
+        "splits": {
+          "test": {
+            "n": 3613,
+            "accuracy": 0.7777470246332687,
+            "balanced_accuracy": 0.44767162323640103,
+            "macro_f1": 0.40500247691500907,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Repair",
+                "Remake",
+                "Energy recovery"
+              ],
+              "matrix": [
+                [
+                  1516,
+                  148,
+                  79,
+                  4,
+                  14,
+                  0
+                ],
+                [
+                  122,
+                  1082,
+                  203,
+                  21,
+                  32,
+                  13
+                ],
+                [
+                  25,
+                  75,
+                  203,
+                  6,
+                  12,
+                  5
+                ],
+                [
+                  6,
+                  8,
+                  3,
+                  2,
+                  0,
+                  0
+                ],
+                [
+                  2,
+                  7,
+                  6,
+                  0,
+                  6,
+                  0
+                ],
+                [
+                  1,
+                  9,
+                  2,
+                  0,
+                  0,
+                  1
+                ]
+              ]
+            },
+            "usage_class": {
+              "n": 3613,
+              "accuracy": 0.7777470246332687,
+              "balanced_accuracy": 0.596985134910256,
+              "macro_f1": 0.5639810474295968,
+              "confusion_matrix": {
+                "labels": [
+                  "Reuse",
+                  "Export",
+                  "Recycle",
+                  "Other"
+                ],
+                "matrix": [
+                  [
+                    1516,
+                    148,
+                    79,
+                    18
+                  ],
+                  [
+                    122,
+                    1082,
+                    203,
+                    66
+                  ],
+                  [
+                    25,
+                    75,
+                    203,
+                    23
+                  ],
+                  [
+                    9,
+                    24,
+                    11,
+                    9
+                  ]
+                ]
+              }
+            }
+          },
+          "cross_site": {
+            "n": 7355,
+            "accuracy": 0.736505778382053,
+            "balanced_accuracy": 0.21801802019628894,
+            "macro_f1": 0.16077700949271695,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Repair",
+                "Remake",
+                "Energy recovery"
+              ],
+              "matrix": [
+                [
+                  5319,
+                  1399,
+                  342,
+                  23,
+                  77,
+                  12
+                ],
+                [
+                  56,
+                  98,
+                  15,
+                  2,
+                  1,
+                  1
+                ],
+                [
+                  0,
+                  3,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  2,
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            },
+            "usage_class": {
+              "n": 7355,
+              "accuracy": 0.736505778382053,
+              "balanced_accuracy": 0.3270270302944334,
+              "macro_f1": 0.24116551423907542,
+              "confusion_matrix": {
+                "labels": [
+                  "Reuse",
+                  "Export",
+                  "Recycle",
+                  "Other"
+                ],
+                "matrix": [
+                  [
+                    5319,
+                    1399,
+                    342,
+                    112
+                  ],
+                  [
+                    56,
+                    98,
+                    15,
+                    4
+                  ],
+                  [
+                    0,
+                    3,
+                    0,
+                    0
+                  ],
+                  [
+                    2,
+                    3,
+                    2,
+                    0
+                  ]
+                ]
+              }
+            }
+          }
+        },
+        "permutation_importance": {
+          "split": "val",
+          "scoring": "macro_f1",
+          "repeats": 5,
+          "baseline_macro_f1": 0.40628097750679437,
+          "features": [
+            {
+              "feature": "condition",
+              "mean_macro_f1_drop": 0.13664960499698647,
+              "std_macro_f1_drop": 0.0054317722036830145
+            },
+            {
+              "feature": "material",
+              "mean_macro_f1_drop": 0.09654784792916718,
+              "std_macro_f1_drop": 0.008838952620050616
+            },
+            {
+              "feature": "pilling",
+              "mean_macro_f1_drop": 0.04052843782213646,
+              "std_macro_f1_drop": 0.014569063837196933
+            },
+            {
+              "feature": "stains",
+              "mean_macro_f1_drop": 0.03948224742108382,
+              "std_macro_f1_drop": 0.0020294272393739377
+            },
+            {
+              "feature": "type",
+              "mean_macro_f1_drop": 0.02105341046796977,
+              "std_macro_f1_drop": 0.019419363052022857
+            },
+            {
+              "feature": "holes",
+              "mean_macro_f1_drop": 0.014715252173850312,
+              "std_macro_f1_drop": 0.004187542075238557
+            },
+            {
+              "feature": "brand_frequency",
+              "mean_macro_f1_drop": 0.012354049017424118,
+              "std_macro_f1_drop": 0.007402985718906453
+            },
+            {
+              "feature": "trend",
+              "mean_macro_f1_drop": 0.002966806810360589,
+              "std_macro_f1_drop": 0.003425434518654864
+            }
+          ]
+        },
+        "best_iteration": 276
+      }
+    }
+  },
+  "front": null,
+  "fusion": null,
+  "calibration_notes": "Temperature and the abstention threshold are fit on val only.",
+  "station3": {
+    "prior_sample_size": 200,
+    "prior_sample_seed": 42,
+    "prior_sample_item_ids": [
+      "2023_06_19_12_33_05",
+      "2023_06_20_12_42_36",
+      "2023_06_21_09_19_19",
+      "2023_06_21_11_15_12",
+      "2023_06_21_12_18_43",
+      "2023_06_22_08_04_48",
+      "2023_06_26_08_03_13",
+      "2023_06_26_09_30_20",
+      "2023_06_26_11_32_32",
+      "2023_06_27_08_29_38",
+      "2023_06_27_09_32_29",
+      "2023_06_27_12_10_35",
+      "2023_06_27_13_08_06",
+      "2023_06_27_13_23_44",
+      "2023_06_28_07_47_46",
+      "2023_06_28_07_50_01",
+      "2023_06_28_07_53_53",
+      "2023_06_28_08_18_52",
+      "2023_06_28_09_16_09",
+      "2023_06_28_13_22_18",
+      "2023_06_29_09_21_45",
+      "2023_06_29_11_20_00__station3__1",
+      "2023_06_29_13_30_34",
+      "2023_06_30_07_19_30",
+      "2023_06_30_08_04_44",
+      "2023_06_30_12_14_42",
+      "2023_06_30_12_24_38",
+      "2023_07_03_11_01_21",
+      "2023_07_03_11_13_40",
+      "2023_07_04_07_49_01",
+      "2023_07_04_08_40_04",
+      "2023_07_04_08_56_02",
+      "2023_07_04_10_50_13",
+      "2023_07_04_10_54_22",
+      "2023_07_05_09_15_28",
+      "2023_07_05_12_47_55",
+      "2023_07_06_07_49_38",
+      "2023_07_06_09_37_10",
+      "2023_07_06_10_29_57",
+      "2023_07_07_09_39_44",
+      "2023_07_10_07_53_21",
+      "2023_07_10_08_09_37",
+      "2023_07_10_11_40_16",
+      "2023_07_10_13_04_03",
+      "2023_07_11_08_18_46",
+      "2023_07_11_09_37_36",
+      "2023_07_13_09_07_10",
+      "2023_07_13_10_31_09",
+      "2023_07_13_10_48_01",
+      "2023_07_13_12_41_57",
+      "2023_07_17_07_47_24",
+      "2023_07_17_10_18_11",
+      "2023_07_18_08_14_55",
+      "2023_07_18_08_19_11",
+      "2023_07_18_10_35_07",
+      "2023_07_21_07_41_30",
+      "2023_07_21_07_43_14",
+      "2023_07_21_08_49_51",
+      "2023_07_21_11_37_37",
+      "2023_07_24_07_20_38",
+      "2023_07_24_08_31_01",
+      "2023_07_24_09_05_13",
+      "2023_07_24_09_47_12",
+      "2023_07_25_09_40_25",
+      "2023_07_25_10_43_50",
+      "2023_07_25_11_06_11",
+      "2023_07_25_11_11_34",
+      "2023_07_25_12_09_50",
+      "2023_07_28_08_34_41",
+      "2023_07_28_08_52_33",
+      "2023_08_30_09_04_58",
+      "2023_09_06_06_36_22",
+      "2023_09_11_06_09_51",
+      "2023_09_11_06_37_08",
+      "2023_09_11_07_46_28",
+      "2023_09_12_08_27_29",
+      "2023_09_15_05_44_47",
+      "2023_09_18_12_42_57",
+      "2023_09_19_05_25_54",
+      "2023_09_19_05_58_03",
+      "2023_09_20_07_12_21",
+      "2023_09_20_07_54_21",
+      "2023_09_20_08_47_57",
+      "2023_09_20_09_33_32",
+      "2023_09_21_10_51_50",
+      "2023_09_21_11_14_38",
+      "2023_09_22_08_09_13",
+      "2023_09_22_13_08_40",
+      "2023_09_25_07_27_48",
+      "2023_09_25_08_20_18",
+      "2023_09_25_09_21_10",
+      "2023_09_25_09_30_58",
+      "2023_09_26_11_27_30",
+      "2023_09_26_11_36_58",
+      "2023_09_26_11_55_34",
+      "2023_09_28_11_07_58",
+      "2023_09_28_11_11_09",
+      "2023_09_29_08_25_27",
+      "2023_09_29_08_51_35",
+      "2023_09_29_09_50_08",
+      "2023_09_29_12_47_41",
+      "2023_09_29_13_15_11",
+      "2023_10_03_11_03_44",
+      "2023_10_06_07_51_29",
+      "2023_10_06_08_49_43",
+      "2023_10_06_11_59_09",
+      "2023_10_09_10_36_14",
+      "2023_10_09_10_47_02",
+      "2023_10_10_07_26_16",
+      "2023_10_10_07_33_30",
+      "2023_10_10_07_58_55",
+      "2023_10_10_09_17_40",
+      "2023_10_10_09_28_58",
+      "2023_10_11_05_37_54",
+      "2023_10_11_08_35_35",
+      "2023_10_16_08_19_29",
+      "2023_10_18_08_00_27",
+      "2023_10_18_12_09_59",
+      "2023_10_19_07_46_15",
+      "2023_10_19_10_44_36",
+      "2023_10_19_10_54_02",
+      "2023_10_19_11_07_46",
+      "2023_10_20_08_31_52",
+      "2023_10_24_10_50_19",
+      "2023_10_26_08_21_17",
+      "2023_10_26_08_43_20",
+      "2023_10_26_08_57_58",
+      "2023_10_26_09_36_15",
+      "2023_10_26_09_41_09",
+      "2023_10_26_11_25_10",
+      "2023_10_27_05_25_20",
+      "2023_10_27_06_16_33",
+      "2023_10_30_11_52_36",
+      "2023_10_30_14_01_55",
+      "2023_10_31_12_03_59",
+      "2023_10_31_12_42_42",
+      "2023_10_31_14_19_45",
+      "2023_11_01_12_24_14",
+      "2023_11_01_12_32_39",
+      "2023_11_01_13_39_06",
+      "2023_11_02_06_07_09",
+      "2023_11_02_12_50_13",
+      "2023_11_02_13_50_32",
+      "2023_11_02_14_27_36",
+      "2023_11_06_08_20_17",
+      "2023_11_06_10_10_25",
+      "2023_11_07_11_56_11",
+      "2023_11_07_11_57_40",
+      "2023_11_07_12_42_59",
+      "2023_11_08_09_11_47",
+      "2023_11_08_10_06_36",
+      "2023_11_08_10_22_48",
+      "2023_11_08_12_18_12",
+      "2023_11_08_12_32_14",
+      "2023_11_08_14_17_57",
+      "2023_11_09_08_18_01",
+      "2023_11_09_08_45_31",
+      "2023_11_09_08_59_15",
+      "2023_11_09_10_36_28",
+      "2023_11_10_06_46_39",
+      "2023_11_10_08_36_07",
+      "2023_11_10_10_11_47",
+      "2023_11_10_10_39_04",
+      "2023_11_10_13_05_06",
+      "2023_11_10_14_21_49",
+      "2023_11_13_10_41_14",
+      "2023_11_14_08_33_56",
+      "2023_11_14_08_48_55",
+      "2023_11_14_10_37_46",
+      "2023_11_14_12_36_44",
+      "2023_11_14_12_46_11",
+      "2023_11_14_12_48_58",
+      "2023_11_15_08_37_22",
+      "2023_11_15_10_27_18",
+      "2023_11_15_13_58_09",
+      "2023_11_15_14_49_55",
+      "2023_11_16_09_56_43",
+      "2023_11_16_10_07_37",
+      "2023_11_17_08_32_57",
+      "2023_11_20_08_37_38",
+      "2023_11_20_10_12_49",
+      "2023_11_21_10_46_37",
+      "2023_11_22_09_03_18",
+      "2023_11_22_14_33_36",
+      "2023_11_24_08_39_40",
+      "2023_11_24_08_45_46",
+      "2023_11_24_10_30_55",
+      "2023_11_30_10_52_47",
+      "2023_11_30_14_21_12",
+      "2023_12_01_14_15_23",
+      "2023_12_04_11_52_15",
+      "2023_12_04_11_57_23",
+      "2023_12_04_14_47_51",
+      "2023_12_08_06_38_22",
+      "2023_12_08_14_12_48",
+      "2023_12_14_06_11_58",
+      "2023_12_14_07_35_30",
+      "2023_12_14_07_40_19",
+      "2023_12_14_07_56_56",
+      "2023_12_15_13_48_39"
+    ],
+    "n_scored": 7155,
+    "n_cross_site": 7355,
+    "source_prior": {
+      "Reuse": 0.48755542417972214,
+      "Export": 0.40727165237954477,
+      "Recycle": 0.09021578480638487,
+      "Repair": 0.004729530002955957,
+      "Remake": 0.006739580254212237,
+      "Energy recovery": 0.003488028377180018
+    },
+    "source_prior_counts": {
+      "Reuse": 8247,
+      "Export": 6889,
+      "Recycle": 1526,
+      "Repair": 80,
+      "Remake": 114,
+      "Energy recovery": 59
+    },
+    "target_prior": {
+      "Reuse": 0.98,
+      "Export": 0.02,
+      "Recycle": 0.0,
+      "Repair": 0.0,
+      "Remake": 0.0,
+      "Energy recovery": 0.0
+    },
+    "target_prior_counts": {
+      "Reuse": 196,
+      "Export": 4,
+      "Recycle": 0,
+      "Repair": 0,
+      "Remake": 0,
+      "Energy recovery": 0
+    },
+    "laplace_alpha": 1,
+    "target_prior_laplace": {
+      "Reuse": 0.9563106796116505,
+      "Export": 0.024271844660194174,
+      "Recycle": 0.0048543689320388345,
+      "Repair": 0.0048543689320388345,
+      "Remake": 0.0048543689320388345,
+      "Energy recovery": 0.0048543689320388345
+    },
+    "method": "p(y|x) * target_prior / source_prior, then argmax",
+    "em_reference": "Saerens, Latinne, and Decaestecker, Neural Computation 14(1), 2002",
+    "primary_metrics": [
+      "balanced_accuracy",
+      "macro_f1"
+    ],
+    "secondary_metrics": [
+      "accuracy"
+    ],
+    "probability_source": {
+      "majority": "one-hot on the training majority class",
+      "rule_router": "softmax of the illustrative route scores",
+      "logistic_regression": "predict_proba",
+      "lightgbm": "predict_proba"
+    },
+    "note": "Each corrected prediction is the argmax of p(y|x) times a station 3 class prior divided by the training class prior. The labelled sample is a simple random sample of station 3 garments and is excluded from the scored rows. Its raw class shares are reported even when a class count is zero. Laplace smoothing adds one count to every class before dividing, so a class missing from the sample stays possible. The EM prior (Saerens, Latinne, and Decaestecker, 2002) is estimated from each model's p(y|x) on the scored rows and does not use station 3 labels. If that p(y|x) already puts more mass on a rare class than the training prior, the EM estimate can concentrate on that class. The router values being reweighted are a softmax of the illustrative route scores.",
+    "models": {
+      "majority": {
+        "uncorrected": {
+          "n": 7155,
+          "accuracy": 0.9749825296995108,
+          "balanced_accuracy": 0.16666666666666666,
+          "macro_f1": 0.16455546906328875,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                6976,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                169,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                4,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.9749825296995108,
+            "balanced_accuracy": 0.25,
+            "macro_f1": 0.24683320359493313,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  6976,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  169,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  3,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  7,
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            }
+          }
+        },
+        "label_shift_laplace": {
+          "n": 7155,
+          "accuracy": 0.9749825296995108,
+          "balanced_accuracy": 0.16666666666666666,
+          "macro_f1": 0.16455546906328875,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                6976,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                169,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                4,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.9749825296995108,
+            "balanced_accuracy": 0.25,
+            "macro_f1": 0.24683320359493313,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  6976,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  169,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  3,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  7,
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            }
+          }
+        },
+        "label_shift_em": {
+          "n": 7155,
+          "accuracy": 0.9749825296995108,
+          "balanced_accuracy": 0.16666666666666666,
+          "macro_f1": 0.16455546906328875,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                6976,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                169,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                4,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.9749825296995108,
+            "balanced_accuracy": 0.25,
+            "macro_f1": 0.24683320359493313,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  6976,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  169,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  3,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  7,
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            }
+          }
+        },
+        "n_undefined_reweight": {
+          "label_shift_laplace": 0,
+          "label_shift_em": 0
+        },
+        "em_prior": {
+          "Reuse": 1.0,
+          "Export": 0.0,
+          "Recycle": 0.0,
+          "Repair": 0.0,
+          "Remake": 0.0,
+          "Energy recovery": 0.0
+        },
+        "em_iterations": 2,
+        "em_converged": true
+      },
+      "rule_router": {
+        "uncorrected": {
+          "n": 7155,
+          "accuracy": 0.950104821802935,
+          "balanced_accuracy": 0.28734231651376146,
+          "macro_f1": 0.16716397400914784,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                6795,
+                0,
+                0,
+                181,
+                0,
+                0
+              ],
+              [
+                120,
+                0,
+                0,
+                49,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                3,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                3,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                2,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.9503843466107617,
+            "balanced_accuracy": 0.42208490334207077,
+            "macro_f1": 0.2547516955389368,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  6795,
+                  0,
+                  0,
+                  181
+                ],
+                [
+                  120,
+                  0,
+                  0,
+                  49
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  3
+                ],
+                [
+                  2,
+                  0,
+                  0,
+                  5
+                ]
+              ]
+            }
+          }
+        },
+        "label_shift_laplace": {
+          "n": 7155,
+          "accuracy": 0.9720475192173306,
+          "balanced_accuracy": 0.16616494648318042,
+          "macro_f1": 0.16453749704281997,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                6955,
+                0,
+                0,
+                21,
+                0,
+                0
+              ],
+              [
+                151,
+                0,
+                0,
+                18,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                2,
+                0,
+                0
+              ],
+              [
+                4,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.9720475192173306,
+            "balanced_accuracy": 0.24924741972477063,
+            "macro_f1": 0.24680624556422995,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  6955,
+                  0,
+                  0,
+                  21
+                ],
+                [
+                  151,
+                  0,
+                  0,
+                  18
+                ],
+                [
+                  1,
+                  0,
+                  0,
+                  2
+                ],
+                [
+                  7,
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            }
+          }
+        },
+        "label_shift_em": {
+          "n": 7155,
+          "accuracy": 0.0005590496156533892,
+          "balanced_accuracy": 0.16666666666666666,
+          "macro_f1": 0.00018624575126879918,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                0,
+                0,
+                0,
+                6976,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                169,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                3,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                4,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.0009783368273934311,
+            "balanced_accuracy": 0.25,
+            "macro_f1": 0.0004886903099692823,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  0,
+                  0,
+                  0,
+                  6976
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  169
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  7
+                ]
+              ]
+            }
+          }
+        },
+        "n_undefined_reweight": {
+          "label_shift_laplace": 0,
+          "label_shift_em": 0
+        },
+        "em_prior": {
+          "Reuse": 1.1394017244496228e-46,
+          "Export": 4.098899001812882e-50,
+          "Recycle": 5.7491183473631104e-40,
+          "Repair": 0.9999989843722764,
+          "Remake": 1.5284510619353363e-08,
+          "Energy recovery": 1.0003432130137674e-06
+        },
+        "em_iterations": 27,
+        "em_converged": true
+      },
+      "logistic_regression": {
+        "uncorrected": {
+          "n": 7155,
+          "accuracy": 0.7822501747030048,
+          "balanced_accuracy": 0.23887507238115915,
+          "macro_f1": 0.1695018893938922,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                5530,
+                799,
+                106,
+                194,
+                335,
+                12
+              ],
+              [
+                61,
+                66,
+                11,
+                3,
+                25,
+                3
+              ],
+              [
+                0,
+                2,
+                0,
+                0,
+                0,
+                1
+              ],
+              [
+                1,
+                1,
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.7823899371069183,
+            "balanced_accuracy": 0.36724118000031014,
+            "macro_f1": 0.2534957996245051,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  5530,
+                  799,
+                  106,
+                  541
+                ],
+                [
+                  61,
+                  66,
+                  11,
+                  31
+                ],
+                [
+                  0,
+                  2,
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  2,
+                  1,
+                  2
+                ]
+              ]
+            }
+          }
+        },
+        "label_shift_laplace": {
+          "n": 7155,
+          "accuracy": 0.9046820405310971,
+          "balanced_accuracy": 0.2068773693520077,
+          "macro_f1": 0.17690258820738883,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                6461,
+                42,
+                3,
+                212,
+                183,
+                75
+              ],
+              [
+                101,
+                11,
+                2,
+                19,
+                19,
+                17
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                0,
+                2
+              ],
+              [
+                1,
+                0,
+                0,
+                1,
+                1,
+                1
+              ],
+              [
+                1,
+                0,
+                0,
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.9051013277428371,
+            "balanced_accuracy": 0.39067319688515434,
+            "macro_f1": 0.2669636171140954,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  6461,
+                  42,
+                  3,
+                  470
+                ],
+                [
+                  101,
+                  11,
+                  2,
+                  55
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  3
+                ],
+                [
+                  2,
+                  1,
+                  0,
+                  4
+                ]
+              ]
+            }
+          }
+        },
+        "label_shift_em": {
+          "n": 7155,
+          "accuracy": 0.1317959468902865,
+          "balanced_accuracy": 0.10581517584097859,
+          "macro_f1": 0.03982570394364558,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                941,
+                0,
+                0,
+                2744,
+                3289,
+                2
+              ],
+              [
+                6,
+                0,
+                0,
+                67,
+                96,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                2,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                2,
+                2,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.13249475890985324,
+            "balanced_accuracy": 0.2837227637614679,
+            "macro_f1": 0.0599472253505152,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  941,
+                  0,
+                  0,
+                  6035
+                ],
+                [
+                  6,
+                  0,
+                  0,
+                  163
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  7
+                ]
+              ]
+            }
+          }
+        },
+        "n_undefined_reweight": {
+          "label_shift_laplace": 0,
+          "label_shift_em": 0
+        },
+        "em_prior": {
+          "Energy recovery": 0.0006001702979267232,
+          "Export": 4.2018160749905023e-23,
+          "Recycle": 1.6456482411421923e-24,
+          "Remake": 0.46233274539317276,
+          "Repair": 0.37317570110436904,
+          "Reuse": 0.16389138320453145
+        },
+        "em_iterations": 31,
+        "em_converged": true
+      },
+      "lightgbm": {
+        "uncorrected": {
+          "n": 7155,
+          "accuracy": 0.7366876310272537,
+          "balanced_accuracy": 0.2173504424298355,
+          "macro_f1": 0.160732344167927,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                5176,
+                1360,
+                330,
+                22,
+                76,
+                12
+              ],
+              [
+                56,
+                95,
+                14,
+                2,
+                1,
+                1
+              ],
+              [
+                0,
+                3,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                2,
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.7366876310272537,
+            "balanced_accuracy": 0.32602566364475327,
+            "macro_f1": 0.2410985162518905,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  5176,
+                  1360,
+                  330,
+                  110
+                ],
+                [
+                  56,
+                  95,
+                  14,
+                  4
+                ],
+                [
+                  0,
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  2,
+                  3,
+                  2,
+                  0
+                ]
+              ]
+            }
+          }
+        },
+        "label_shift_laplace": {
+          "n": 7155,
+          "accuracy": 0.9186582809224318,
+          "balanced_accuracy": 0.20611581211660604,
+          "macro_f1": 0.19394071999964516,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                6522,
+                274,
+                48,
+                46,
+                55,
+                31
+              ],
+              [
+                106,
+                51,
+                5,
+                3,
+                2,
+                2
+              ],
+              [
+                1,
+                2,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                4,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.9186582809224318,
+            "balanced_accuracy": 0.3091737181749091,
+            "macro_f1": 0.29091107999946775,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  6522,
+                  274,
+                  48,
+                  132
+                ],
+                [
+                  106,
+                  51,
+                  5,
+                  7
+                ],
+                [
+                  1,
+                  2,
+                  0,
+                  0
+                ],
+                [
+                  5,
+                  1,
+                  1,
+                  0
+                ]
+              ]
+            }
+          }
+        },
+        "label_shift_em": {
+          "n": 7155,
+          "accuracy": 0.8518518518518519,
+          "balanced_accuracy": 0.21297944035792482,
+          "macro_f1": 0.18405984216085783,
+          "confusion_matrix": {
+            "labels": [
+              "Reuse",
+              "Export",
+              "Recycle",
+              "Repair",
+              "Remake",
+              "Energy recovery"
+            ],
+            "matrix": [
+              [
+                6025,
+                520,
+                242,
+                42,
+                130,
+                17
+              ],
+              [
+                77,
+                70,
+                13,
+                3,
+                5,
+                1
+              ],
+              [
+                0,
+                3,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                1,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "usage_class": {
+            "n": 7155,
+            "accuracy": 0.8518518518518519,
+            "balanced_accuracy": 0.31946916053688723,
+            "macro_f1": 0.27608976324128676,
+            "confusion_matrix": {
+              "labels": [
+                "Reuse",
+                "Export",
+                "Recycle",
+                "Other"
+              ],
+              "matrix": [
+                [
+                  6025,
+                  520,
+                  242,
+                  189
+                ],
+                [
+                  77,
+                  70,
+                  13,
+                  9
+                ],
+                [
+                  0,
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  2,
+                  1,
+                  0
+                ]
+              ]
+            }
+          }
+        },
+        "n_undefined_reweight": {
+          "label_shift_laplace": 0,
+          "label_shift_em": 0
+        },
+        "em_prior": {
+          "Energy recovery": 0.0033873181928978377,
+          "Export": 0.10436144451807519,
+          "Recycle": 0.05210771254502565,
+          "Remake": 0.02535408936681158,
+          "Repair": 0.00994592460981367,
+          "Reuse": 0.804843510767376
+        },
+        "em_iterations": 23,
+        "em_converged": true
+      }
+    }
+  },
+  "metric_figures": {}
+}

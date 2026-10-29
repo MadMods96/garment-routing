@@ -1,0 +1,23 @@
+seed: 42
+index: data/index.parquet
+image_root: data/resized
+backbone: convnext_tiny
+pretrained: true
+fusion: mean
+image_size: 224
+epochs: 12
+batch_size: 32
+lr: 0.0003
+weight_decay: 0.05
+warmup_epochs: 1
+dropout: 0.2
+amp: true
+num_workers: 0
+device: auto
+run_name: convnext_tiny_mean
+loss_weights:
+  condition: 1.0
+  pilling: 0.5
+  stains: 1.0
+  holes: 1.0
+  usage: 1.5

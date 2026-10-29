@@ -1,0 +1,11 @@
+data/
+runs/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.ipynb_checkpoints/
+*.pt
+*.pth
+*.ckpt
+reports/smoke_results.json
