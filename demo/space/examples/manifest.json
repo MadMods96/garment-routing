@@ -1,0 +1,52 @@
+{
+  "examples": [
+    {
+      "item_id": "2023_08_04_05_59_07",
+      "front": "2023_08_04_05_59_07_front.jpg",
+      "back": "2023_08_04_05_59_07_back.jpg",
+      "usage_class": "Reuse",
+      "condition": 4,
+      "attribution": "Photograph from the Clothing Dataset for Second-Hand Fashion (Zenodo 10.5281/zenodo.13788681), CC-BY 4.0. Wargön Innovation / Myrorna / RISE."
+    },
+    {
+      "item_id": "2024_03_05_14_48_49",
+      "front": "2024_03_05_14_48_49_front.jpg",
+      "back": "2024_03_05_14_48_49_back.jpg",
+      "usage_class": "Export",
+      "condition": 2,
+      "attribution": "Photograph from the Clothing Dataset for Second-Hand Fashion (Zenodo 10.5281/zenodo.13788681), CC-BY 4.0. Wargön Innovation / Myrorna / RISE."
+    },
+    {
+      "item_id": "2024_01_24_07_33_56",
+      "front": "2024_01_24_07_33_56_front.jpg",
+      "back": "2024_01_24_07_33_56_back.jpg",
+      "usage_class": "Reuse",
+      "condition": 5,
+      "attribution": "Photograph from the Clothing Dataset for Second-Hand Fashion (Zenodo 10.5281/zenodo.13788681), CC-BY 4.0. Wargön Innovation / Myrorna / RISE."
+    },
+    {
+      "item_id": "2023_04_25_06_32_44",
+      "front": "2023_04_25_06_32_44_front.jpg",
+      "back": "2023_04_25_06_32_44_back.jpg",
+      "usage_class": "Recycle",
+      "condition": 2,
+      "attribution": "Photograph from the Clothing Dataset for Second-Hand Fashion (Zenodo 10.5281/zenodo.13788681), CC-BY 4.0. Wargön Innovation / Myrorna / RISE."
+    },
+    {
+      "item_id": "2022_11_30_12_24_44",
+      "front": "2022_11_30_12_24_44_front.jpg",
+      "back": "2022_11_30_12_24_44_back.jpg",
+      "usage_class": "Export",
+      "condition": 3,
+      "attribution": "Photograph from the Clothing Dataset for Second-Hand Fashion (Zenodo 10.5281/zenodo.13788681), CC-BY 4.0. Wargön Innovation / Myrorna / RISE."
+    },
+    {
+      "item_id": "2023_06_21_06_30_19",
+      "front": "2023_06_21_06_30_19_front.jpg",
+      "back": "2023_06_21_06_30_19_back.jpg",
+      "usage_class": "Export",
+      "condition": 4,
+      "attribution": "Photograph from the Clothing Dataset for Second-Hand Fashion (Zenodo 10.5281/zenodo.13788681), CC-BY 4.0. Wargön Innovation / Myrorna / RISE."
+    }
+  ]
+}

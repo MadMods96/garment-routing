@@ -44,7 +44,12 @@ def _predict(front: Image.Image | None, back: Image.Image | None, passport_text:
     global _CACHED
     if _CACHED is None or _CACHED[0] != checkpoint:
         _CACHED = (checkpoint, *load_model(Path(checkpoint)))
-    _path, model, config, device = _CACHED
+    _path, model, config, device, meta = _CACHED
+    temperature = float(os.environ.get("GARMENT_TEMPERATURE", meta.get("temperature", 1)))
+    if os.environ.get("GARMENT_ABSTAIN"):
+        threshold = float(os.environ["GARMENT_ABSTAIN"])
+    else:
+        threshold = meta.get("abstain_threshold")
     result = assess(
         model,
         config,
@@ -53,8 +58,8 @@ def _predict(front: Image.Image | None, back: Image.Image | None, passport_text:
         document,
         Path(os.environ.get("GARMENT_ROUTER", ROOT / "configs" / "router.yaml")),
         device,
-        temperature=float(os.environ.get("GARMENT_TEMPERATURE", "1")),
-        abstain_threshold=float(os.environ["GARMENT_ABSTAIN"]) if os.environ.get("GARMENT_ABSTAIN") else None,
+        temperature=temperature,
+        abstain_threshold=threshold,
     )
     if result["route"] == "HUMAN_REVIEW":
         headline = "Sent to human review"

@@ -1,7 +1,15 @@
-"""Decision layer: hard rules, then illustrative route values, then capacity.
+"""Decision layer: model-first routing with hard-rule safety overrides.
 
 Every weight in the YAML config is a placeholder. This module does not estimate
 life-cycle impact. It applies the config it is given and says which rule fired.
+
+Priority in ``decide``:
+1. Low usage confidence → HUMAN_REVIEW.
+2. Hard-rule safety: Major holes/stains forbid Reuse/Export (confident damage
+   head). High-value fibre may skip Recycle ``force`` only — never the forbid.
+   A contradicting model usage class → HUMAN_REVIEW.
+3. Otherwise final route = model usage class. Soft rule-vs-model disagreement
+   is recorded as an explanation, not an escalation.
 """
 
 from __future__ import annotations
@@ -14,6 +22,7 @@ from typing import Any, Mapping
 from garmentroute.util import load_yaml
 
 HUMAN_REVIEW = "HUMAN_REVIEW"
+_OTHER_ROUTES = {"Repair", "Remake", "Energy recovery"}
 
 
 @dataclass
@@ -27,6 +36,9 @@ class GarmentSignals:
     smell: str | None = None
     usage_confidence: float | None = None
     usage_probs: dict[str, float] | None = None
+    usage_class: str | None = None
+    holes_confidence: float | None = None
+    stains_confidence: float | None = None
     damageimage: str | None = None
     damageloc: str | None = None
     damage: str | None = None
@@ -48,6 +60,7 @@ class Decision:
     alternatives: list[dict[str, Any]]
     scores: dict[str, float] = field(default_factory=dict)
     capacity_displaced: bool = False
+    rule_route: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -57,6 +70,7 @@ class Decision:
             "alternatives": self.alternatives,
             "scores": self.scores,
             "capacity_displaced": self.capacity_displaced,
+            "rule_route": self.rule_route,
         }
 
 
@@ -71,6 +85,11 @@ def load_router_config(path: str) -> dict[str, Any]:
     if "route_value" not in config or "route_order" not in config:
         raise ValueError("router config needs route_order and route_value")
     return config
+
+
+def collapse_usage_route(route: str) -> str:
+    """Map six-way routes onto the four-way usage head (Repair/Remake/Energy → Other)."""
+    return "Other" if route in _OTHER_ROUTES else route
 
 
 def _tokens(text: str | None) -> set[str]:
@@ -104,6 +123,15 @@ def _rule_fires(rule: Mapping[str, Any], signals: GarmentSignals) -> bool:
         if signals.condition is None or signals.condition < int(rule["condition_gte"]):
             return False
     return True
+
+
+def _trigger_confidence(rule: Mapping[str, Any], signals: GarmentSignals) -> float | None:
+    """Confidence of the damage head that would make this hard rule fire."""
+    if "holes" in rule:
+        return signals.holes_confidence
+    if "stains" in rule:
+        return signals.stains_confidence
+    return None
 
 
 def _attribute_reasons(signals: GarmentSignals) -> list[str]:
@@ -145,19 +173,34 @@ def score_routes(
     signals: GarmentSignals,
     passport: Mapping[str, Any],
     config: Mapping[str, Any],
+    *,
+    apply_hard_rules: bool = True,
 ) -> tuple[dict[str, float], list[str], list[str]]:
     """Return route scores, human-readable reasons, and fibres that matched.
 
-    Forbidden routes are omitted. Higher scores are preferred.
+    Forbidden routes are omitted. A ``force`` list keeps only those routes.
+    High-value fibre skips ``force`` so Repair/Reuse bonuses can still win.
     """
     scores = {route: float(config["route_value"][route]) for route in config["route_order"]}
     reasons: list[str] = []
-    for rule in config.get("hard_rules", []):
-        if _rule_fires(rule, signals):
+    fibres = matching_fibres(
+        passport.get("fibre_composition") if isinstance(passport, Mapping) else None,
+        list(config.get("high_value_fibres", [])),
+    )
+    if apply_hard_rules:
+        for rule in config.get("hard_rules", []):
+            if not _rule_fires(rule, signals):
+                continue
+            skip_force = bool(rule.get("skip_force_if_high_value_fibre")) and bool(fibres)
+            if rule.get("force") and not skip_force:
+                allowed = set(rule["force"])
+                scores = {route: scores[route] for route in scores if route in allowed}
             for route in rule.get("forbid", []):
                 scores.pop(route, None)
             if rule.get("reason"):
                 reasons.append(str(rule["reason"]))
+            if skip_force and rule.get("force"):
+                reasons.append("high-value fibre: skipped Recycle force")
     bonus_routes = set(config.get("condition_bonus_routes", []))
     condition_table = config.get("condition_bonus", {})
     if signals.condition is not None and str(signals.condition) in condition_table:
@@ -173,10 +216,6 @@ def score_routes(
         for route, delta in adjustments.get(attribute, {}).get(level, {}).items():
             if route in scores:
                 scores[route] += float(delta)
-    fibres = matching_fibres(
-        passport.get("fibre_composition") if isinstance(passport, Mapping) else None,
-        list(config.get("high_value_fibres", [])),
-    )
     if fibres:
         for route, delta in config.get("high_value_bonus", {}).items():
             if route in scores:
@@ -225,6 +264,36 @@ def _alternatives(scores: Mapping[str, float], probabilities: Mapping[str, float
     return rows
 
 
+def _model_usage_class(signals: GarmentSignals) -> str | None:
+    if signals.usage_class:
+        return signals.usage_class
+    if signals.usage_probs:
+        return max(signals.usage_probs, key=signals.usage_probs.get)
+    return None
+
+
+def _hard_rule_contradicts_model(
+    rule: Mapping[str, Any],
+    model_usage: str,
+    *,
+    skip_force: bool = False,
+) -> bool:
+    """True when a safety force/forbid conflicts with the model's usage class.
+
+    ``skip_force`` (high-value fibre) drops only the Recycle force check; forbid
+    Reuse/Export still applies so Major damage never falls through to resale.
+    """
+    forbidden = set(rule.get("forbid") or [])
+    if model_usage in forbidden:
+        return True
+    if skip_force:
+        return False
+    forced = set(rule.get("force") or [])
+    if forced and model_usage not in forced:
+        return True
+    return False
+
+
 def route_probabilities(
     signals: GarmentSignals,
     passport: Mapping[str, Any],
@@ -234,7 +303,7 @@ def route_probabilities(
 
     This is a normalisation of the config scores, not a trained class probability.
     """
-    scores, _reasons, _fibres = score_routes(signals, passport, config)
+    scores, _reasons, _fibres = score_routes(signals, passport, config, apply_hard_rules=False)
     return _softmax(scores, float(config.get("score_temperature", 1.0)))
 
 
@@ -244,37 +313,86 @@ def decide(
     config: Mapping[str, Any],
     abstain_threshold: float | None = None,
 ) -> Decision:
-    """Route one garment. Low model confidence becomes HUMAN_REVIEW before scores are used."""
-    threshold = config.get("abstain_confidence") if abstain_threshold is None else abstain_threshold
-    scores, reasons, _fibres = score_routes(signals, passport, config)
-    probabilities = _softmax(scores, float(config.get("score_temperature", 1.0)))
+    """Route one garment: model usage first, hard rules only as safety overrides."""
+    usage_threshold = config.get("abstain_confidence") if abstain_threshold is None else abstain_threshold
+    hard_threshold = config.get("hard_rule_min_confidence", usage_threshold)
+    soft_scores, soft_reasons, fibres = score_routes(
+        signals, passport, config, apply_hard_rules=False
+    )
+    soft_probabilities = _softmax(soft_scores, float(config.get("score_temperature", 1.0)))
+    rule_route = max(soft_scores, key=soft_scores.get) if soft_scores else None
+    model_usage = _model_usage_class(signals)
+    usage_confidence = float(signals.usage_confidence) if signals.usage_confidence is not None else 0.0
+
     if (
-        threshold is not None
+        usage_threshold is not None
         and signals.usage_confidence is not None
-        and signals.usage_confidence < float(threshold)
+        and signals.usage_confidence < float(usage_threshold)
     ):
         return Decision(
             route=HUMAN_REVIEW,
-            confidence=float(signals.usage_confidence),
-            reasons=["usage confidence below the abstention threshold", *reasons],
-            alternatives=_alternatives(scores, probabilities, HUMAN_REVIEW),
-            scores=scores,
+            confidence=usage_confidence,
+            reasons=["usage confidence below the abstention threshold", *soft_reasons],
+            alternatives=_alternatives(soft_scores, soft_probabilities, HUMAN_REVIEW),
+            scores=soft_scores,
+            rule_route=rule_route,
         )
-    if not scores:
+
+    if not model_usage:
         return Decision(
             route=HUMAN_REVIEW,
-            confidence=0.0,
-            reasons=["no route remained after hard rules", *reasons],
-            alternatives=[],
-            scores={},
+            confidence=usage_confidence,
+            reasons=["no model usage class available", *soft_reasons],
+            alternatives=_alternatives(soft_scores, soft_probabilities, HUMAN_REVIEW),
+            scores=soft_scores,
+            rule_route=rule_route,
         )
-    route = max(scores, key=lambda name: scores[name])
+
+    for rule in config.get("hard_rules", []):
+        if not _rule_fires(rule, signals):
+            continue
+        skip_force = bool(rule.get("skip_force_if_high_value_fibre")) and bool(fibres)
+        trigger_conf = _trigger_confidence(rule, signals)
+        if hard_threshold is not None and (trigger_conf is None or trigger_conf < float(hard_threshold)):
+            return Decision(
+                route=HUMAN_REVIEW,
+                confidence=float(trigger_conf) if trigger_conf is not None else 0.0,
+                reasons=[
+                    "hard-rule safety signal is below confidence threshold "
+                    f"({rule.get('name', 'rule')})",
+                    *soft_reasons,
+                ],
+                alternatives=_alternatives(soft_scores, soft_probabilities, HUMAN_REVIEW),
+                scores=soft_scores,
+                rule_route=rule_route,
+            )
+        if _hard_rule_contradicts_model(rule, model_usage, skip_force=skip_force):
+            return Decision(
+                route=HUMAN_REVIEW,
+                confidence=usage_confidence,
+                reasons=[
+                    "hard-rule safety override contradicts model "
+                    f"({rule.get('name', 'rule')}: model {model_usage})",
+                    *soft_reasons,
+                ],
+                alternatives=_alternatives(soft_scores, soft_probabilities, HUMAN_REVIEW),
+                scores=soft_scores,
+                rule_route=rule_route,
+            )
+
+    reasons = list(soft_reasons)
+    if rule_route and collapse_usage_route(rule_route) != model_usage:
+        reasons.insert(
+            0,
+            f"soft rule route would be {rule_route}; final follows model {model_usage}",
+        )
     return Decision(
-        route=route,
-        confidence=float(probabilities.get(route, 0.0)),
+        route=model_usage,
+        confidence=usage_confidence,
         reasons=reasons,
-        alternatives=_alternatives(scores, probabilities, route),
-        scores=scores,
+        alternatives=_alternatives(soft_scores, soft_probabilities, model_usage),
+        scores=soft_scores,
+        rule_route=rule_route,
     )
 
 
@@ -340,6 +458,7 @@ def assign_batch(
                 alternatives=item.decision.alternatives,
                 scores=scores,
                 capacity_displaced=True,
+                rule_route=item.decision.rule_route,
             )
             continue
         route = max(feasible, key=lambda name: feasible[name])
@@ -357,5 +476,6 @@ def assign_batch(
             alternatives=_alternatives(scores, probabilities, route),
             scores=scores,
             capacity_displaced=displaced,
+            rule_route=item.decision.rule_route,
         )
     return [item.decision for item in prepared]

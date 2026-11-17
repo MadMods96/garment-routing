@@ -22,14 +22,19 @@ def _runtime() -> dict:
         raise HTTPException(status_code=503, detail="Set GARMENT_CHECKPOINT to a trained checkpoint. This process will not invent predictions.")
     from garmentroute.infer import load_model
 
-    model, config, device = load_model(Path(checkpoint))
+    model, config, device, meta = load_model(Path(checkpoint))
+    threshold = (
+        float(os.environ["GARMENT_ABSTAIN"])
+        if os.environ.get("GARMENT_ABSTAIN")
+        else meta.get("abstain_threshold")
+    )
     _RUNTIME = {
         "model": model,
         "config": config,
         "device": device,
         "router": Path(os.environ.get("GARMENT_ROUTER", "configs/router.yaml")),
-        "temperature": float(os.environ.get("GARMENT_TEMPERATURE", "1")),
-        "threshold": float(os.environ["GARMENT_ABSTAIN"]) if os.environ.get("GARMENT_ABSTAIN") else None,
+        "temperature": float(os.environ.get("GARMENT_TEMPERATURE", meta.get("temperature", 1))),
+        "threshold": threshold,
     }
     return _RUNTIME
 

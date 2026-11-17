@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from garmentroute.labels import USAGE_LABELS
+from garmentroute.metrics import WARGON_PHOTO_NOTE
 
 
 def _fmt(value: Any) -> str:
@@ -19,6 +20,19 @@ def _fmt(value: Any) -> str:
     if isinstance(value, int):
         return str(value)
     return str(value)
+
+
+def _fmt_ci(block: Any) -> str:
+    if not isinstance(block, dict):
+        return "not computed"
+    point = block.get("point")
+    low = block.get("ci_low")
+    high = block.get("ci_high")
+    if point is None:
+        return "not computed"
+    if low is None or high is None:
+        return _fmt(point)
+    return f"{_fmt(point)} (95% CI {_fmt(low)}–{_fmt(high)})"
 
 
 def _get(payload: dict | None, *keys: str) -> Any:
@@ -477,33 +491,55 @@ def render_results(results: dict | None, eda: dict | None) -> str:
     lines.extend(_gold_census_lines(eda))
     expert = _get(results, "gold", "expert_vs_expert_usage")
     condition = _get(results, "gold", "expert_vs_expert_condition")
+    expert_ci = _get(results, "bootstrap", "gold_expert_vs_expert_usage")
+    condition_ci = _get(results, "bootstrap", "gold_expert_vs_expert_condition_quadratic")
     lines.append(
-        f"Expert versus expert, usage: Cohen's kappa {_fmt(_get(expert, 'cohen_kappa'))}, "
+        f"Expert versus expert, usage: Cohen's kappa "
+        f"{_fmt_ci(expert_ci) if expert_ci else _fmt(_get(expert, 'cohen_kappa'))}, "
         f"raw agreement {_fmt(_get(expert, 'raw_agreement'))}, "
         f"pairs {_fmt(_get(expert, 'n_pairs'))}. "
         f"Those pairs come from {_fmt(_get(expert, 'n_items_with_pairs'))} of "
         f"{_fmt(_get(expert, 'n_items'))} numbered garments. "
         "A garment with fewer than two numbered annotations contributes no pair. "
-        "Lowercase `test` annotations are not in these pairs."
+        "Lowercase `test` annotations are not in these pairs. "
+        "Confidence intervals are garment-level bootstrap percentile intervals."
     )
     lines.append(
         f"Expert versus expert, condition: Cohen's kappa {_fmt(_get(condition, 'cohen_kappa'))}, "
-        f"quadratic weighted kappa {_fmt(_get(condition, 'cohen_kappa_quadratic'))}."
+        f"quadratic weighted kappa "
+        f"{_fmt_ci(condition_ci) if condition_ci else _fmt(_get(condition, 'cohen_kappa_quadratic'))}."
     )
+    lines.append(
+        f"Model versus Wargön (Wargön photograph), usage Cohen's kappa: "
+        f"{_fmt_ci(_get(results, 'bootstrap', 'model_vs_wargon_usage'))}. "
+        f"Model versus Myrorna (same Wargön photograph), usage Cohen's kappa: "
+        f"{_fmt_ci(_get(results, 'bootstrap', 'model_vs_myrorna_usage'))}."
+    )
+    lines.append(
+        f"Model versus Wargön, condition quadratic weighted kappa: "
+        f"{_fmt_ci(_get(results, 'bootstrap', 'model_vs_wargon_condition_quadratic'))}. "
+        f"Model versus Myrorna, condition quadratic weighted kappa: "
+        f"{_fmt_ci(_get(results, 'bootstrap', 'model_vs_myrorna_condition_quadratic'))}."
+    )
+    lines.append(_get(results, "gold", "wargon_photo_note") or WARGON_PHOTO_NOTE)
     lines.extend(_site_agreement_lines(results))
-    model_kappa = _get(results, "gold", "model_vs_expert", "usage_cohen_kappa")
-    if model_kappa is None:
-        lines.append("Model versus expert kappa: not computed.")
-    else:
-        expert_kappa = _get(expert, "cohen_kappa")
-        lines.append(f"Model versus expert, usage Cohen's kappa: {_fmt(model_kappa)}.")
-        if isinstance(model_kappa, float) and isinstance(expert_kappa, float):
-            gap = expert_kappa - model_kappa
-            lines.append(f"Expert kappa minus model kappa: {_fmt(gap)}.")
-            if gap <= 0.05:
-                lines.append("The model kappa is within 0.05 of the expert-versus-expert kappa.")
-            else:
-                lines.append("The model kappa is not within 0.05 of the expert-versus-expert kappa.")
+    for name, label in (("front", "front-only"), ("fusion", "two-view concat")):
+        model_kappa = _get(results, "gold", f"{name}_model_vs_expert", "usage_cohen_kappa")
+        if model_kappa is None:
+            model_kappa = _get(results, name, "splits", "gold", "after_temperature", "usage_cohen_kappa")
+        lines.append(
+            f"Per-annotation {label} versus expert, usage Cohen's kappa: {_fmt(model_kappa)} "
+            "(Wargön photographs only; Myrorna gold rows have no photographs)."
+        )
+    chosen_kappa = _get(results, "gold", "model_vs_expert", "usage_cohen_kappa")
+    expert_kappa = _get(expert, "cohen_kappa")
+    if isinstance(chosen_kappa, float) and isinstance(expert_kappa, float):
+        gap = expert_kappa - chosen_kappa
+        lines.append(f"Expert kappa minus chosen-model per-annotation kappa: {_fmt(gap)}.")
+        if gap <= 0.05:
+            lines.append("The chosen model kappa is within 0.05 of the expert-versus-expert kappa.")
+        else:
+            lines.append("The chosen model kappa is not within 0.05 of the expert-versus-expert kappa.")
     lines.extend(["", "### Router on the expert damage labels", ""])
     lines.append(
         "These scores give the router the sorter's own condition and damage labels, "
@@ -520,30 +556,134 @@ def render_results(results: dict | None, eda: dict | None) -> str:
             )
     lines.extend(_attribute_baseline_lines(results))
     lines.extend(_station3_lines(results))
-    direct = _get(results, "fusion", "splits", "test", "after_temperature", "usage", "accuracy")
-    routed = _get(
-        results, "router", "on_predicted_attributes", "test", "usage_class_agreement", "accuracy"
-    )
     lines.extend(["", "### Vision model", ""])
     if _get(results, "fusion") is None and _get(results, "front") is None:
         lines.append("Front-only and two-view checkpoints have not been scored.")
     else:
-        for name in ("front", "fusion"):
-            block = _get(results, name)
-            if block is None:
-                lines.append(f"{name}: not computed.")
-                continue
-            for split in ("test", "cross_site"):
-                usage = _get(block, "splits", split, "after_temperature", "usage")
+        chosen = _get(results, "chosen_vision") or {}
+        if chosen.get("note"):
+            lines.append(str(chosen["note"]))
+        else:
+            lines.append(
+                f"Chosen vision model: {_fmt(chosen.get('model'))} "
+                f"by {_fmt(chosen.get('criterion'))}."
+            )
+        lines.append(
+            "Vision heads predict the 4 training usage classes. "
+            "Macro-F1, all 6 expert classes, is not a vision output. "
+            "Coverage-against-accuracy plots are in `reports/figures/`."
+        )
+        model_acc = _get(results, "front", "splits", "test", "after_temperature", "usage", "accuracy")
+        if model_acc is None:
+            model_acc = _get(
+                results,
+                "front",
+                "splits",
+                "test",
+                "router_policy_comparison",
+                "model_first_hard_rule_safety_only",
+                "all_garments_model_usage",
+                "accuracy",
+            )
+        majority_acc = _get(results, "majority", "test", "usage_class", "accuracy")
+        if model_acc is not None and majority_acc is not None:
+            lines.append(
+                f"Model accuracy is below the majority baseline ({_fmt(model_acc)} vs {_fmt(majority_acc)}) "
+                "because macro-F1 is the target metric; majority wins accuracy by always predicting Reuse."
+            )
+        conf = _get(results, "front", "confidence_signal_comparison", "test", "report")
+        selected = _get(results, "front", "confidence_signal_comparison", "selected_signal")
+        expert_agree = _get(results, "gold", "expert_vs_expert_usage", "raw_agreement")
+        expert_pairs = _get(results, "gold", "expert_vs_expert_usage", "n_pairs")
+        if isinstance(conf, dict) and conf.get("points"):
+            lines.append(
+                f"Selective coverage on test uses confidence signal `{_fmt(selected)}` "
+                f"(lowest AURC on val). AURC={_fmt(conf.get('aurc'))}."
+            )
+            lines.append(
+                "| Coverage | Accuracy | Accuracy 95% CI | Macro-F1 | Expert-vs-expert raw usage agreement (gold) |"
+            )
+            lines.append("| --- | --- | --- | --- | --- |")
+            boot = (_get(conf, "accuracy_bootstrap", "fractions") or {})
+            for point in conf["points"]:
+                key = f"{float(point.get('requested_coverage') or 0):.2f}"
+                ci = boot.get(key) if isinstance(boot, dict) else None
+                if isinstance(ci, dict) and ci.get("ci_low") is not None:
+                    ci_text = f"{_fmt(ci.get('ci_low'))}–{_fmt(ci.get('ci_high'))}"
+                else:
+                    ci_text = "not computed"
                 lines.append(
-                    f"{name} {split} usage accuracy {_fmt(_get(usage, 'accuracy'))}, "
-                    f"macro-F1 {_fmt(_get(usage, 'macro_f1'))}."
+                    f"| {_fmt(point.get('requested_coverage'))} | {_fmt(point.get('accuracy'))} | "
+                    f"{ci_text} | {_fmt(point.get('macro_f1'))} | "
+                    f"{_fmt(expert_agree)} |"
                 )
-                ece_before = _get(block, "splits", split, "before_temperature", "calibration", "ece")
-                ece_after = _get(block, "splits", split, "after_temperature", "calibration", "ece")
-                lines.append(f"{name} {split} ECE before {_fmt(ece_before)}, after {_fmt(ece_after)}.")
+            lines.append(
+                "Expert-vs-expert raw usage agreement is from gold annotation pairs "
+                f"(n_pairs={_fmt(expert_pairs)}), not the test selective set; the sets differ."
+            )
+            targets = conf.get("coverage_at_accuracy") or {}
+            lines.append(
+                "Largest coverage with accuracy ≥ 0.60: "
+                f"{_fmt(targets.get('0.60'))}; ≥ 0.70: {_fmt(targets.get('0.70'))}."
+            )
+        lines.append("")
+        lines.append(
+            "| Model | Split | Macro-F1, all 6 expert classes | Macro-F1, 4 training classes | "
+            "Balanced accuracy | Condition MAE | Condition within 1 | "
+            "Stains macro-F1 | Holes macro-F1 | ECE before | ECE after |"
+        )
+        lines.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |")
+        for split in ("test", "cross_site", "gold"):
+            maj = _get(results, "majority", split if split != "gold" else "test")
+            if split != "gold":
+                lines.append(
+                    "| majority | "
+                    + split
+                    + f" | {_fmt(_get(maj, 'usage', 'macro_f1'))} "
+                    + f"| {_fmt(_get(maj, 'usage_class', 'macro_f1'))} "
+                    + f"| {_fmt(_get(maj, 'usage_class', 'balanced_accuracy'))} "
+                    + f"| {_fmt(_get(maj, 'condition', 'mae'))} "
+                    + f"| {_fmt(_get(maj, 'condition', 'within_1_accuracy'))} "
+                    + f"| {_fmt(_get(maj, 'stains_3class', 'macro_f1'))} "
+                    + f"| {_fmt(_get(maj, 'holes', 'macro_f1'))} | not computed | not computed |"
+                )
+                lgbm = _get(results, "attribute_baselines", "models", "lightgbm", "splits", split)
+                lines.append(
+                    "| lightgbm attributes | "
+                    + split
+                    + f" | {_fmt(_get(lgbm, 'macro_f1'))} "
+                    + f"| {_fmt(_get(lgbm, 'usage_class', 'macro_f1'))} "
+                    + f"| {_fmt(_get(lgbm, 'usage_class', 'balanced_accuracy'))} "
+                    + f"| {_fmt(_get(lgbm, 'condition', 'mae'))} "
+                    + f"| {_fmt(_get(lgbm, 'condition', 'within_1_accuracy'))} "
+                    + f"| {_fmt(_get(lgbm, 'stains_3class', 'macro_f1'))} "
+                    + f"| {_fmt(_get(lgbm, 'holes', 'macro_f1'))} | not computed | not computed |"
+                )
+            for name, label in (("front", "front-only"), ("fusion", "two-view concat")):
+                after = _get(results, name, "splits", split, "after_temperature")
+                before = _get(results, name, "splits", split, "before_temperature")
+                usage_f1 = _fmt(_get(after, "usage", "macro_f1"))
+                if name == "front" and split == "test" and _get(results, "bootstrap", "test_usage_macro_f1"):
+                    usage_f1 = _fmt_ci(_get(results, "bootstrap", "test_usage_macro_f1"))
+                lines.append(
+                    f"| {label} | {split} | not computed "
+                    + f"| {usage_f1} "
+                    + f"| {_fmt(_get(after, 'usage', 'balanced_accuracy'))} "
+                    + f"| {_fmt(_get(after, 'condition', 'mae'))} "
+                    + f"| {_fmt(_get(after, 'condition', 'within_1_accuracy'))} "
+                    + f"| {_fmt(_get(after, 'stains', 'macro_f1'))} "
+                    + f"| {_fmt(_get(after, 'holes', 'macro_f1'))} "
+                    + f"| {_fmt(_get(before, 'calibration', 'ece'))} "
+                    + f"| {_fmt(_get(after, 'calibration', 'ece'))} |"
+                )
+    chosen_name = _get(results, "chosen_vision", "model") or "fusion"
+    direct = _get(results, chosen_name, "splits", "test", "after_temperature", "usage", "accuracy")
+    routed = _get(
+        results, "router", "on_predicted_attributes", "test", "usage_class_agreement", "accuracy"
+    )
+    lines.append("")
     lines.append(
-        f"Direct test usage-class accuracy: {_fmt(direct)}. "
+        f"Chosen-model test usage-class accuracy: {_fmt(direct)}. "
         f"Router-from-predicted-attributes test usage-class accuracy: {_fmt(routed)}."
     )
     return "\n".join(lines) + "\n"

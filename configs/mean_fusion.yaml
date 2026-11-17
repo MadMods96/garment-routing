@@ -7,17 +7,20 @@ fusion: mean
 image_size: 224
 epochs: 12
 batch_size: 32
-lr: 0.0003
+backbone_lr: 0.0001
+head_lr: 0.001
+lr: 0.0001
 weight_decay: 0.05
 warmup_epochs: 1
 dropout: 0.2
 amp: true
 num_workers: 0
 device: auto
+class_weight_cap: 5.0
 run_name: convnext_tiny_mean
 loss_weights:
-  condition: 1.0
+  usage: 1.0
+  condition: 0.5
   pilling: 0.5
-  stains: 1.0
-  holes: 1.0
-  usage: 1.5
+  stains: 0.5
+  holes: 0.5

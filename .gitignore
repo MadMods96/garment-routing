@@ -8,4 +8,10 @@ __pycache__/
 *.pt
 *.pth
 *.ckpt
+demo/**/*.pt
+demo/space/examples/*.jpg
+demo/space/.gradio/
+demo/space/garmentroute/
+demo/space/__pycache__/
+_kaggle_pull/
 reports/smoke_results.json

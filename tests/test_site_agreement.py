@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from garmentroute.metrics import site_label_agreement
+from garmentroute.metrics import WARGON_PHOTO_NOTE, model_vs_site_from_wargon_photos, site_label_agreement
 from garmentroute.reporting import render_results
 
 
@@ -68,3 +68,64 @@ def test_readme_quotes_the_site_kappas():
     assert "Different condition: the sites give the garment different condition scores." in text
     assert "0.250" in text
     assert "0.99" not in text
+
+
+def test_model_uses_wargon_photo_against_both_sites():
+    predictions = {
+        "a1": {"usage": "Reuse", "condition": 4},
+        "a2": {"usage": "Export", "condition": 3},
+        "b1": {"usage": "Recycle", "condition": 2},
+        "b2": {"usage": "Reuse", "condition": 1},
+        "c1": {"usage": "Reuse", "condition": 5},
+    }
+    report = model_vs_site_from_wargon_photos(_frame(), predictions)
+    assert report["n_garments_with_wargon_photos"] == 3
+    assert report["photo_item_ids"]["1"] == "a1"
+    assert report["photo_item_ids"]["2"] == "b1"
+    assert "4" not in report["photo_item_ids"]
+    assert report["note"] == WARGON_PHOTO_NOTE
+    assert report["model_vs_wargon"]["usage"]["n_pairs"] == 5
+    assert report["model_vs_wargon"]["usage"]["raw_agreement"] == 0.8
+    assert report["model_vs_myrorna"]["usage"]["n_pairs"] == 2
+    assert report["model_vs_myrorna"]["usage"]["raw_agreement"] == 0.5
+    assert report["model_vs_wargon"]["condition"]["n_pairs"] == 5
+    assert report["model_vs_myrorna"]["condition"]["n_pairs"] == 2
+
+
+def test_readme_quotes_wargon_and_myrorna_model_kappas():
+    results = {
+        "dataset": "clothing_v3",
+        "smoke": False,
+        "seed": 1,
+        "split_meta": {"stratified": True},
+        "majority": {},
+        "router": {"on_expert_attributes": {}},
+        "front": None,
+        "fusion": None,
+        "gold": {
+            "expert_vs_expert_usage": {
+                "cohen_kappa": 0.2,
+                "raw_agreement": 0.5,
+                "n_pairs": 1,
+                "n_items": 1,
+                "n_items_with_pairs": 1,
+            },
+            "expert_vs_expert_condition": {"cohen_kappa": 0.1, "cohen_kappa_quadratic": 0.3},
+            "model_vs_wargon": {
+                "usage": {"cohen_kappa": 0.41},
+                "condition": {"cohen_kappa_quadratic": 0.55},
+            },
+            "model_vs_myrorna": {
+                "usage": {"cohen_kappa": 0.22},
+                "condition": {"cohen_kappa_quadratic": 0.31},
+            },
+            "wargon_photo_note": WARGON_PHOTO_NOTE,
+            "site_agreement": site_label_agreement(_frame()),
+        },
+    }
+    text = render_results(results, {"n_rows": 1, "n_gold": 1})
+    assert "Model versus Wargön (Wargön photograph), usage Cohen's kappa: 0.410" in text
+    assert "Model versus Myrorna (same Wargön photograph), usage Cohen's kappa: 0.220" in text
+    assert "Model versus Wargön, condition quadratic weighted kappa: 0.550" in text
+    assert "Model versus Myrorna, condition quadratic weighted kappa: 0.310" in text
+    assert WARGON_PHOTO_NOTE in text

@@ -3,6 +3,15 @@ placeholder_notice: >
   These are not life-cycle assessment results, not a sorting partner's prices,
   and not measured repair capacity.
 
+  Decision priority (model-first):
+  (1) low calibrated usage confidence → HUMAN_REVIEW;
+  (2) hard-rule safety — Major holes or Major stains forbid Reuse/Export (and
+      force Recycle unless high-value fibre waives only the Recycle force).
+      If that contradicts the model usage class → HUMAN_REVIEW. Fibre never
+      waives the Reuse/Export forbid;
+  (3) otherwise final route = model usage class. Soft rule-vs-model disagreement
+      is an explanation only, not an escalation.
+
 route_order:
   - Reuse
   - Export
@@ -74,19 +83,23 @@ env_weight:
 
 model_probability_weight: 0.35
 score_temperature: 1.0
-abstain_confidence: 0.55
+# Val selective-curve cutoff for ~50% coverage on the 10k front-384 model.
+abstain_confidence: 0.4938643528636096
+hard_rule_min_confidence: 0.55
 
 hard_rules:
-  - name: major_holes_poor_condition
+  - name: major_holes_blocks_resale
     holes: Major
-    condition_lte: 2
-    forbid: [Reuse]
-    reason: "major holes and condition at or below 2/5"
-  - name: major_stains_poor_condition
+    forbid: [Reuse, Export]
+    force: [Recycle]
+    skip_force_if_high_value_fibre: true
+    reason: "major holes forbid Reuse/Export; Recycle unless high-value fibre waives force"
+  - name: major_stains_blocks_resale
     stains: Major
-    condition_lte: 2
-    forbid: [Reuse]
-    reason: "major stains and condition at or below 2/5"
+    forbid: [Reuse, Export]
+    force: [Recycle]
+    skip_force_if_high_value_fibre: true
+    reason: "major stains forbid Reuse/Export; Recycle unless high-value fibre waives force"
 
 # Illustrative partner slots for one batch. Omitted routes are uncapped.
 capacity:

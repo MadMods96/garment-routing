@@ -19,7 +19,14 @@ import pandas as pd
 from garmentroute.attribute_baseline import attribute_baseline_block
 from garmentroute.label_shift import score_shift_variants
 from garmentroute.labels import TERNARY, USAGE_CLASSES, USAGE_LABELS, usage_class
-from garmentroute.metrics import classification_metrics, ordinal_metrics, pairwise_kappa, site_label_agreement
+from garmentroute.metrics import (
+    WARGON_PHOTO_NOTE,
+    classification_metrics,
+    model_vs_site_from_wargon_photos,
+    ordinal_metrics,
+    pairwise_kappa,
+    site_label_agreement,
+)
 from garmentroute.passport import passport_from_annotation
 from garmentroute.router import (
     HUMAN_REVIEW,
@@ -118,6 +125,9 @@ def gold_block(frame: pd.DataFrame) -> dict[str, Any]:
         "expert_vs_expert_condition": pairwise_kappa(gold, "condition", quadratic=True),
         "site_agreement": site_label_agreement(gold),
         "model_vs_expert": None,
+        "model_vs_wargon": None,
+        "model_vs_myrorna": None,
+        "wargon_photo_note": WARGON_PHOTO_NOTE,
     }
 
 
@@ -129,7 +139,15 @@ def _present(value: Any) -> Any:
     return value
 
 
-def _signals_from_record(record: dict[str, Any], confidence: float | None = None, probs: dict | None = None) -> GarmentSignals:
+def _signals_from_record(
+    record: dict[str, Any],
+    confidence: float | None = None,
+    probs: dict | None = None,
+    *,
+    usage_class_name: str | None = None,
+    holes_confidence: float | None = None,
+    stains_confidence: float | None = None,
+) -> GarmentSignals:
     condition = _present(record.get("condition"))
     pilling = _present(record.get("pilling"))
     return GarmentSignals(
@@ -140,6 +158,9 @@ def _signals_from_record(record: dict[str, Any], confidence: float | None = None
         smell=_present(record.get("smell")),
         usage_confidence=confidence,
         usage_probs=probs,
+        usage_class=usage_class_name,
+        holes_confidence=holes_confidence,
+        stains_confidence=stains_confidence,
         damageimage=_present(record.get("damageimage")),
         damageloc=_present(record.get("damageloc")),
         damage=_present(record.get("damage")),
@@ -314,20 +335,32 @@ def _softmax(logits: np.ndarray) -> np.ndarray:
     return weights / weights.sum(axis=1, keepdims=True)
 
 
-def _decode_predictions(outputs: dict[str, Any], item_ids: list[str]) -> list[dict[str, Any]]:
-    from garmentroute.model import coral_decode
+def _decode_predictions(
+    outputs: dict[str, Any],
+    item_ids: list[str],
+    *,
+    holes_major_threshold: float | None = None,
+    coral_method: str | None = None,
+) -> list[dict[str, Any]]:
+    from garmentroute.model import coral_decode, decode_ternary
 
     usage_logits = outputs["usage"].detach().float().cpu().numpy()
-    condition = coral_decode(outputs["condition"]).detach().cpu().tolist()
-    pilling = coral_decode(outputs["pilling"]).detach().cpu().tolist()
-    stains = outputs["stains"].argmax(dim=-1).detach().cpu().tolist()
-    holes = outputs["holes"].argmax(dim=-1).detach().cpu().tolist()
+    condition_logits = outputs["condition"].detach().float().cpu().numpy()
+    holes_logits = outputs["holes"].detach().float().cpu().numpy()
+    stains_logits = outputs["stains"].detach().float().cpu().numpy()
+    condition = coral_decode(outputs["condition"], method=coral_method).detach().cpu().tolist()
+    pilling = coral_decode(outputs["pilling"], method=coral_method).detach().cpu().tolist()
+    stains = decode_ternary(outputs["stains"]).detach().cpu().tolist()
+    holes = decode_ternary(outputs["holes"], major_threshold=holes_major_threshold).detach().cpu().tolist()
     rows = []
     for index, item_id in enumerate(item_ids):
         rows.append(
             {
                 "item_id": item_id,
                 "usage_logits": usage_logits[index].tolist(),
+                "condition_logits": condition_logits[index].tolist(),
+                "holes_logits": holes_logits[index].tolist(),
+                "stains_logits": stains_logits[index].tolist(),
                 "condition": int(condition[index]),
                 "pilling": int(pilling[index]),
                 "stains": TERNARY[int(stains[index])],
@@ -364,12 +397,15 @@ def predict_checkpoint(
     model.load_state_dict(checkpoint["model"])
     model.to(device)
     model.eval()
+    from garmentroute.views import list_image_relatives
+
     dataset = TwoViewDataset(
         frame,
         image_root,
         int(config.get("image_size", 224)),
         train=False,
         view_log=view_log,
+        available=list_image_relatives(image_root),
     )
     if len(dataset) == 0:
         return None
@@ -502,42 +538,86 @@ def router_from_predictions(
 ) -> dict[str, Any]:
     """Route from predicted damage attributes. Fibre still comes from the passport."""
     by_id = {row["item_id"]: row for row in predictions}
-    truth: list[str] = []
-    pred: list[str] = []
+    expert_usage: list[str] = []
+    expert_usage_class: list[str] = []
+    model_usage: list[str] = []
+    final_routes: list[str] = []
+    confidences: list[float] = []
     for record in frame.to_dict("records"):
         row = by_id.get(record["item_id"])
         expert = _present(record.get("usage"))
-        if row is None or expert is None:
+        expert_class = usage_class(str(expert)) if expert is not None else None
+        if row is None or expert is None or expert_class is None:
             continue
         scaled = apply_temperature(np.asarray(row["usage_logits"], dtype=float)[None, :], temperature)[0]
         probabilities = _softmax(scaled[None, :])[0]
+        usage_index = int(np.argmax(probabilities))
+        model_class = USAGE_CLASSES[usage_index]
+        holes_probs = _softmax(np.asarray(row.get("holes_logits") or [0, 0, 0], dtype=float)[None, :])[0]
+        stains_probs = _softmax(np.asarray(row.get("stains_logits") or [0, 0, 0], dtype=float)[None, :])[0]
+        holes_label = row["holes"]
+        stains_label = row["stains"]
+        holes_conf = float(holes_probs[TERNARY.index(holes_label)]) if holes_label in TERNARY else None
+        stains_conf = float(stains_probs[TERNARY.index(stains_label)]) if stains_label in TERNARY else None
         overridden = dict(record)
         overridden["condition"] = row["condition"]
         overridden["pilling"] = row["pilling"]
-        overridden["stains"] = row["stains"]
-        overridden["holes"] = row["holes"]
+        overridden["stains"] = stains_label
+        overridden["holes"] = holes_label
+        confidence = float(probabilities[usage_index])
         signals = _signals_from_record(
             overridden,
-            confidence=float(probabilities.max()),
+            confidence=confidence,
             probs={USAGE_CLASSES[index]: float(probabilities[index]) for index in range(len(USAGE_CLASSES))},
+            usage_class_name=model_class,
+            holes_confidence=holes_conf,
+            stains_confidence=stains_conf,
         )
         decision = decide(signals, _passport_from_record(record), config, abstain_threshold=abstain_threshold)
-        truth.append(str(expert))
-        pred.append(decision.route)
-    report = classification_metrics(truth, pred, list(USAGE_LABELS) + [HUMAN_REVIEW])
-    mapped_truth = []
-    mapped_pred = []
-    for label, route in zip(truth, pred):
+        expert_usage.append(str(expert))
+        expert_usage_class.append(expert_class)
+        model_usage.append(model_class)
+        final_routes.append(decision.route)
+        confidences.append(confidence)
+    report = classification_metrics(expert_usage, final_routes, list(USAGE_LABELS) + list(USAGE_CLASSES) + [HUMAN_REVIEW])
+    abstained = int(sum(route == HUMAN_REVIEW for route in final_routes))
+    n = len(final_routes)
+    decided_truth = []
+    decided_pred = []
+    for label, route in zip(expert_usage_class, final_routes):
         if route == HUMAN_REVIEW:
             continue
-        mapped = usage_class(route)
-        if mapped is None:
-            continue
-        mapped_truth.append(usage_class(label))
-        mapped_pred.append(mapped)
-    report["usage_class_agreement"] = classification_metrics(mapped_truth, mapped_pred, list(USAGE_CLASSES))
-    report["abstained"] = int(sum(route == HUMAN_REVIEW for route in pred))
+        mapped = usage_class(route) or route
+        decided_truth.append(label)
+        decided_pred.append(mapped)
+    selective = classification_metrics(decided_truth, decided_pred, list(USAGE_CLASSES))
+    all_garments = classification_metrics(expert_usage_class, model_usage, list(USAGE_CLASSES))
+    correct_all = [pred == truth for pred, truth in zip(model_usage, expert_usage_class)]
+    report["n"] = n
+    report["abstained"] = abstained
+    report["human_review_share"] = float(abstained / n) if n else None
+    report["human_review_share_note"] = (
+        "More than half of scored garments go to HUMAN_REVIEW under the current policy."
+        if report["human_review_share"] is not None and report["human_review_share"] > 0.5
+        else None
+    )
+    report["selective"] = {
+        "n_decided": int(len(decided_truth)),
+        "coverage": float(len(decided_truth) / n) if n else None,
+        "accuracy": selective.get("accuracy"),
+        "macro_f1": selective.get("macro_f1"),
+        "balanced_accuracy": selective.get("balanced_accuracy"),
+    }
+    report["all_garments_model_usage"] = {
+        "n": all_garments.get("n"),
+        "accuracy": all_garments.get("accuracy"),
+        "macro_f1": all_garments.get("macro_f1"),
+        "balanced_accuracy": all_garments.get("balanced_accuracy"),
+    }
+    report["coverage_accuracy"] = coverage_accuracy(confidences, correct_all)
+    report["usage_class_agreement"] = selective
     report["inputs"] = "predicted_damage_attributes_and_dataset_material_as_mock_passport"
+    report["policy"] = "model_first_hard_rule_safety_only"
     return report
 
 
@@ -558,7 +638,16 @@ def model_block(
     val_scored = score_predictions(val, val_predictions, temperature=1.0)
     if not val_scored["_val_labels"]:
         return {"status": "val split has no scored usage labels", "checkpoint": str(checkpoint)}
+    for head in ("condition", "pilling"):
+        head_report = val_scored.get(head) or {}
+        matrix = (head_report.get("confusion_matrix") or {}).get("matrix")
+        print(
+            f"val {head} mae={head_report.get('mae')} within_1={head_report.get('within_1_accuracy')} "
+            f"confusion={matrix}",
+            flush=True,
+        )
     temperature = fit_temperature(np.asarray(val_scored["_val_logits"], dtype=float), val_scored["_val_labels"])
+    print(f"fitted temperature {temperature}", flush=True)
     val_calibrated = score_predictions(val, val_predictions, temperature=temperature)
     threshold = select_threshold(val_calibrated["_confidences"], val_calibrated["_correct"], min_coverage)
     block: dict[str, Any] = {
@@ -568,6 +657,10 @@ def model_block(
         "ece_val_after": val_calibrated["calibration"],
         "abstain_threshold_fit_on": "val",
         "abstain_threshold": threshold,
+        "val_condition": val_scored.get("condition"),
+        "val_pilling": val_scored.get("pilling"),
+        "val_stains": val_scored.get("stains"),
+        "val_holes": val_scored.get("holes"),
         "splits": {},
     }
     for split in ("test", "cross_site", "gold"):
@@ -596,6 +689,22 @@ def model_block(
             }
         entropies = [row["usage_entropy"] for row in predictions if "usage_entropy" in row]
         router_view = None
+        wargon_photo_scoring = None
+        if split == "gold":
+            prediction_by_item = {}
+            for row in predictions:
+                scaled = apply_temperature(
+                    np.asarray(row["usage_logits"], dtype=float)[None, :], temperature
+                )[0]
+                predicted = USAGE_CLASSES[int(np.argmax(_softmax(scaled[None, :])[0]))]
+                prediction_by_item[str(row["item_id"])] = {
+                    "usage": predicted,
+                    "condition": row["condition"],
+                }
+            wargon_photo_scoring = model_vs_site_from_wargon_photos(
+                frame[frame["split"] == "gold"],
+                prediction_by_item,
+            )
         if router_config is not None and split in {"test", "cross_site"}:
             router_view = router_from_predictions(
                 frame[frame["split"] == split],
@@ -611,6 +720,7 @@ def model_block(
             "mc_dropout_passes": mc_passes,
             "mean_usage_entropy": float(np.mean(entropies)) if entropies else None,
             "router_on_predicted_attributes": router_view,
+            "wargon_photo_scoring": wargon_photo_scoring,
         }
     return block
 
@@ -682,11 +792,19 @@ def evaluate(
                 "usage": after.get("usage"),
                 "condition": after.get("condition"),
                 "note": (
-                    "Model-versus-expert kappa compares each gold annotation with the "
-                    "model on that annotation's photographs. Expert-versus-expert kappa "
-                    "is pairwise between annotators of the same gold id."
+                    "Per-annotation model-versus-expert kappa uses each gold row's own "
+                    "photographs. Myrorna gold rows have no photographs in the archive, "
+                    "so they are not in this number. Site-level kappas reuse the Wargön "
+                    "photograph of the same garment number."
                 ),
             }
+        photo = gold_split.get("wargon_photo_scoring") or {}
+        if photo.get("model_vs_wargon"):
+            payload["gold"]["model_vs_wargon"] = photo["model_vs_wargon"]
+            payload["gold"]["model_vs_myrorna"] = photo["model_vs_myrorna"]
+            payload["gold"]["n_garments_with_wargon_photos"] = photo.get(
+                "n_garments_with_wargon_photos"
+            )
         predicted = {}
         for split in ("test", "cross_site"):
             split_payload = (scored.get("splits") or {}).get(split) or {}

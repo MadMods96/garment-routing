@@ -1,0 +1,10 @@
+torch
+torchvision
+timm
+gradio
+pillow
+numpy
+pyyaml
+huggingface_hub
+scikit-learn
+pandas

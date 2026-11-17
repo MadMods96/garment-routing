@@ -57,9 +57,10 @@ class TwoViewDataset(Dataset):
         image_size: int,
         train: bool,
         view_log: Path | None = None,
+        available: set[str] | None = None,
     ) -> None:
         self.image_root = Path(image_root)
-        self.frame, self.view_log = resolve_views(frame, self.image_root)
+        self.frame, self.view_log = resolve_views(frame, self.image_root, available)
         self.frame = self.frame.reset_index(drop=True)
         self._write_view_log(view_log)
         self.image_size = image_size

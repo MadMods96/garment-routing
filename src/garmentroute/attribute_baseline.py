@@ -8,6 +8,7 @@ the gold set are scored or ignored, never used to fit or to rank features.
 
 from __future__ import annotations
 
+import inspect
 from typing import Any, Callable, Sequence
 
 import numpy as np
@@ -236,18 +237,20 @@ def attribute_baseline_block(frame: pd.DataFrame, seed: int, config: dict[str, A
     )
     train_trees = _for_lightgbm(train_x, levels)
     valid_trees = _for_lightgbm(valid_x, levels)
-    boosting.fit(
-        train_trees,
-        train_codes,
-        categorical_feature=list(CATEGORICAL),
-        eval_X=valid_trees,
-        eval_y=valid_codes,
-        eval_metric="multi_logloss",
-        callbacks=[
+    fit_kwargs: dict[str, Any] = {
+        "categorical_feature": list(CATEGORICAL),
+        "eval_metric": "multi_logloss",
+        "callbacks": [
             early_stopping(int(boosting_config["early_stopping_rounds"]), verbose=False),
             log_evaluation(0),
         ],
-    )
+    }
+    if "eval_X" in inspect.signature(boosting.fit).parameters:
+        fit_kwargs["eval_X"] = valid_trees
+        fit_kwargs["eval_y"] = valid_codes
+    else:
+        fit_kwargs["eval_set"] = [(valid_trees, valid_codes)]
+    boosting.fit(train_trees, train_codes, **fit_kwargs)
 
     def predict_logistic(features: pd.DataFrame) -> Any:
         return logistic.predict(features)

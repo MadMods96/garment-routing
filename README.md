@@ -6,6 +6,8 @@ Used textiles are sorted by hand into a next life: reuse, export, repair, remake
 
 The code is MIT. The photographs and labels are not. They come from the Clothing Dataset for Second-Hand Fashion, CC-BY 4.0, collected by Wargön Innovation and Myrorna and released by RISE under the EU CISUTAC project. See the citation below.
 
+**Weights (public):** [MadnessOverloaded/garment-routing-front](https://huggingface.co/MadnessOverloaded/garment-routing-front) — front-only ConvNeXt-Tiny pack with real eval numbers on the model card.
+
 ## Architecture
 
 ```mermaid
@@ -67,8 +69,11 @@ The garment count times the mean equals the numbered annotation records. It does
 | 107 | Further annotation records of those same garments. The comment uses a lowercase `test` plus a number, which does not receive a garment id. The file is in the split because it is under `test100`. These records are not in the mean and not in the agreement pairs. |
 | 1 | Annotation records in the gold split with no item number. The comment contains `Test`, so the file is held out of training. Each of these is one JSON file, not one of the numbered garments. Comment text: `Test for new update`. |
 
-Expert versus expert, usage: Cohen's kappa 0.193, raw agreement 0.524, pairs 292. Those pairs come from 99 of 100 numbered garments. A garment with fewer than two numbered annotations contributes no pair. Lowercase `test` annotations are not in these pairs.
-Expert versus expert, condition: Cohen's kappa 0.098, quadratic weighted kappa 0.308.
+Expert versus expert, usage: Cohen's kappa 0.193 (95% CI 0.119–0.271), raw agreement 0.524, pairs 292. Those pairs come from 99 of 100 numbered garments. A garment with fewer than two numbered annotations contributes no pair. Lowercase `test` annotations are not in these pairs. Confidence intervals are garment-level bootstrap percentile intervals.
+Expert versus expert, condition: Cohen's kappa 0.098, quadratic weighted kappa 0.308 (95% CI 0.202–0.410).
+Model versus Wargön (Wargön photograph), usage Cohen's kappa: 0.079 (95% CI 0.017–0.152). Model versus Myrorna (same Wargön photograph), usage Cohen's kappa: 0.113 (95% CI 0.056–0.185).
+Model versus Wargön, condition quadratic weighted kappa: 0.110 (95% CI -0.017–0.234). Model versus Myrorna, condition quadratic weighted kappa: 0.069 (95% CI -0.113–0.222).
+Myrorna's gold photographs are missing from the archive, so its annotations are scored using the Wargön photograph of the same garment.
 
 Numbered gold garments annotated at both Wargön and Myrorna: 96. Wargön is station 1 and station 2. Myrorna is station 3. Cross-site pairs join every Wargön annotation to every Myrorna annotation of the same garment. Within-Wargön pairs are unordered pairs of Wargön annotations on those same garments.
 Usage Cohen's kappa, cross-site 0.186 (raw agreement 0.540, pairs 189), within Wargön 0.226 (raw agreement 0.485, pairs 99).
@@ -95,7 +100,10 @@ Same view means the condition scores are equal. Same route means the usage label
 Same condition and a different route: the sites give the garment the same condition score and a different usage label.
 Different condition: the sites give the garment different condition scores.
 
-Model versus expert kappa: not computed.
+Per-annotation front-only versus expert, usage Cohen's kappa: 0.073 (Wargön photographs only; Myrorna gold rows have no photographs).
+Per-annotation two-view concat versus expert, usage Cohen's kappa: 0.106 (Wargön photographs only; Myrorna gold rows have no photographs).
+Expert kappa minus chosen-model per-annotation kappa: 0.120.
+The chosen model kappa is not within 0.05 of the expert-versus-expert kappa.
 
 ### Router on the expert damage labels
 
@@ -197,11 +205,36 @@ EM prior from each model's p(y|x) on the scored rows. Saerens, Latinne, and Deca
 
 ### Vision model
 
-Front-only and two-view checkpoints have not been scored.
-Direct test usage-class accuracy: not computed. Router-from-predicted-attributes test usage-class accuracy: not computed.
+Front-only is the better model on test usage macro-F1, 4 training classes. Condition and pilling now use expected-level CORAL decoding; temperature is fit on log(T) and clamped to [0.05, 20].
+Vision heads predict the 4 training usage classes. Macro-F1, all 6 expert classes, is not a vision output. Coverage-against-accuracy plots are in `reports/figures/`.
+Model accuracy is below the majority baseline (0.463 vs 0.487) because macro-F1 is the target metric; majority wins accuracy by always predicting Reuse.
+Selective coverage on test uses confidence signal `max_prob` (lowest AURC on val). AURC=0.457.
+| Coverage | Accuracy | Accuracy 95% CI | Macro-F1 | Expert-vs-expert raw usage agreement (gold) |
+| --- | --- | --- | --- | --- |
+| 0.250 | 0.584 | 0.503–0.671 | 0.452 | 0.524 |
+| 0.500 | 0.522 | 0.468–0.582 | 0.386 | 0.524 |
+| 0.750 | 0.475 | not computed | 0.337 | 0.524 |
+| 1.000 | 0.463 | not computed | 0.343 | 0.524 |
+Expert-vs-expert raw usage agreement is from gold annotation pairs (n_pairs=292), not the test selective set; the sets differ.
+Largest coverage with accuracy ≥ 0.60: 0.227; ≥ 0.70: 0.069.
+
+| Model | Split | Macro-F1, all 6 expert classes | Macro-F1, 4 training classes | Balanced accuracy | Condition MAE | Condition within 1 | Stains macro-F1 | Holes macro-F1 | ECE before | ECE after |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| majority | test | 0.109 | 0.164 | 0.250 | 0.934 | 0.708 | 0.275 | 0.321 | not computed | not computed |
+| lightgbm attributes | test | 0.405 | 0.564 | 0.597 | not computed | not computed | not computed | not computed | not computed | not computed |
+| front-only | test | not computed | 0.343 (95% CI 0.294–0.403) | 0.378 | 0.995 | 0.741 | 0.424 | 0.367 | 0.121 | 0.047 |
+| two-view concat | test | not computed | 0.300 | 0.308 | 0.929 | 0.715 | 0.372 | 0.351 | 0.158 | 0.335 |
+| majority | cross_site | 0.165 | 0.247 | 0.250 | 1.102 | 0.726 | 0.320 | 0.331 | not computed | not computed |
+| lightgbm attributes | cross_site | 0.161 | 0.241 | 0.327 | not computed | not computed | not computed | not computed | not computed | not computed |
+| front-only | cross_site | not computed | 0.188 | 0.356 | 1.010 | 0.753 | 0.293 | 0.313 | 0.157 | 0.075 |
+| two-view concat | cross_site | not computed | 0.223 | 0.281 | 1.022 | 0.766 | 0.325 | 0.337 | 0.235 | 0.227 |
+| front-only | gold | not computed | 0.212 | 0.286 | 1.191 | 0.649 | 0.271 | 0.307 | 0.263 | 0.164 |
+| two-view concat | gold | not computed | 0.221 | 0.298 | 1.197 | 0.632 | 0.298 | 0.322 | 0.080 | 0.532 |
+
+Chosen-model test usage-class accuracy: 0.463. Router-from-predicted-attributes test usage-class accuracy: 0.319.
 <!-- RESULTS:END -->
 
-The coverage-against-accuracy figure and the cross-site vision numbers are written by `python -m garmentroute.evaluate` once a checkpoint exists. Until that run, they are absent on purpose. `scripts/sync_readme_metrics.py` copies the JSON into the block above.
+Coverage-against-accuracy and reliability plots for both vision checkpoints are in `reports/figures/`. `scripts/sync_readme_metrics.py` copies `reports/results.json` into the block above. Checkpoints stay in `runs/` and are not committed.
 
 Label-only results that do get computed as soon as the index exists:
 
@@ -217,6 +250,7 @@ The router row is a policy check on the placeholder weights. The attribute-model
 - The numbers in `configs/router.yaml` are illustrative placeholders. They are not life-cycle assessment results, not a partner's price list, and not measured repair capacity.
 - The photographs and labels come from Swedish sorting facilities (Wargön Innovation and Myrorna). A model that agrees with them can still fail in another country or another process.
 - Annotators disagree. The gold set exists so that model-versus-expert agreement can be read next to expert-versus-expert agreement. If the model is short of the human kappa, that is a real gap, not a rounding error.
+- Myrorna's gold photographs are missing from the archive, so its annotations are scored using the Wargön photograph of the same garment.
 - The network does not classify fibre from the photograph. Fibre enters through the passport, and in this dataset that string is mostly an NIR scanner reading.
 - The attribute-only logistic regression and LightGBM scores are a ceiling for a model that is handed condition, pilling, stains, holes, material, type, brand frequency, and trend.
 - The passport schema is a mock inspired by the EU ESPR direction. It is not an official digital product passport.

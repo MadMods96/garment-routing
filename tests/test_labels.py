@@ -1,6 +1,8 @@
 """Label normalisation."""
 
 from garmentroute.labels import (
+    USAGE_CLASSES,
+    balanced_class_weights,
     canonical_ternary,
     canonical_usage,
     is_gold_comment,
@@ -68,6 +70,22 @@ def test_gold_comment_marker():
     assert is_gold_comment("latest test of the zipper") is False
     assert loose_gold_number("test 92, detergent smell") == "92"
     assert loose_gold_number("Test for new update") is None
+
+
+def test_class_weights_cap_other_at_five():
+    counts = {"Reuse": 1400, "Export": 1200, "Recycle": 193, "Other": 40}
+    uncapped = 2833 / (4 * 40)
+    assert uncapped > 5
+    weights = balanced_class_weights(counts, USAGE_CLASSES, cap=5.0)
+    assert weights[USAGE_CLASSES.index("Other")] == 5.0
+    assert max(weights) <= 5.0
+    assert weights[USAGE_CLASSES.index("Reuse")] < 1.0
+
+
+def test_class_weights_zero_for_missing_class():
+    counts = {"Reuse": 10, "Export": 10, "Recycle": 10}
+    weights = balanced_class_weights(counts, USAGE_CLASSES, cap=5.0)
+    assert weights[USAGE_CLASSES.index("Other")] == 0.0
 
 
 def test_ordinal_rejects_out_of_range():

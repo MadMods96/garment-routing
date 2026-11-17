@@ -9,6 +9,7 @@ They are never filled with "None".
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -97,6 +98,25 @@ def usage_class(usage: str | None) -> str | None:
     if usage is None:
         return None
     return _TRAIN_CLASS.get(usage)
+
+
+def balanced_class_weights(
+    counts: Mapping[Any, Any],
+    classes: Sequence[Any],
+    cap: float = 5.0,
+) -> list[float]:
+    """Inverse-frequency weights, capped so a rare class cannot dominate."""
+    present = [name for name in classes if int(counts.get(name, 0)) > 0]
+    total = sum(int(counts.get(name, 0)) for name in present) or 1
+    n_present = len(present) or 1
+    weights = []
+    for name in classes:
+        count = int(counts.get(name, 0))
+        if count == 0:
+            weights.append(0.0)
+        else:
+            weights.append(min(float(cap), total / (n_present * count)))
+    return weights
 
 
 def canonical_ternary(value: Any) -> str | None:

@@ -1,0 +1,32 @@
+seed: 42
+index: data/index.parquet
+image_root: data/resized
+backbone: convnext_tiny
+pretrained: true
+fusion: front
+image_size: 224
+epochs: 60
+batch_size: 32
+backbone_lr: 0.0003
+head_lr: 0.0003
+lr: 0.0003
+weight_decay: 0.0
+warmup_epochs: 0
+dropout: 0.0
+amp: true
+num_workers: 2
+device: auto
+constant_lr: true
+augment: false
+disable_class_weights: true
+usage_only: true
+max_items: 200
+early_stopping_patience: 60
+progress_every: 20
+run_name: usage_overfit_200
+loss_weights:
+  usage: 1.0
+  condition: 0.0
+  pilling: 0.0
+  stains: 0.0
+  holes: 0.0

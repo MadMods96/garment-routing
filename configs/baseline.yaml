@@ -5,26 +5,33 @@ backbone: convnext_tiny
 pretrained: true
 fusion: concat
 image_size: 224
-epochs: 12
+epochs: 8
 batch_size: 32
-lr: 0.0003
+backbone_lr: 0.0001
+head_lr: 0.001
+lr: 0.0001
 weight_decay: 0.05
 warmup_epochs: 1
 dropout: 0.2
 amp: true
-num_workers: 0
+num_workers: 4
 device: auto
+class_weight_cap: 5.0
+early_stopping_patience: 8
+progress_every: 50
 run_name: convnext_tiny_concat
 loss_weights:
-  condition: 1.0
+  usage: 1.0
+  condition: 0.5
   pilling: 0.5
-  stains: 1.0
-  holes: 1.0
-  usage: 1.5
+  stains: 0.5
+  holes: 0.5
 val_fraction: 0.15
 test_fraction: 0.15
 phash_threshold: 4
-subset_size: 6000
+subset_size: 16200
 station3_subset_size: 1500
+# 6k ablation list. Active 384@10k train uses data/subset_members_16200.txt
+# via configs/front_only_384.yaml.
 mc_passes: 20
 abstain_min_coverage: 0.5

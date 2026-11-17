@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, cohen_kappa_score, confusion_matrix, f1_score
 
-from garmentroute.labels import USAGE_LABELS
+from garmentroute.labels import USAGE_LABELS, usage_class
 
 
 def classification_metrics(
@@ -36,6 +36,8 @@ def classification_metrics(
             "accuracy": None,
             "balanced_accuracy": None,
             "macro_f1": None,
+            "per_class_recall": {str(label): None for label in label_list},
+            "per_class_support": {str(label): 0 for label in label_list},
             "confusion_matrix": {"labels": label_list, "matrix": []},
         }
     matrix = confusion_matrix(truth, pred, labels=label_list)
@@ -48,11 +50,18 @@ def classification_metrics(
             where=support > 0,
         )
     present = recall[~np.isnan(recall)]
+    per_class_recall = {
+        str(label): (None if np.isnan(recall[index]) else float(recall[index]))
+        for index, label in enumerate(label_list)
+    }
+    per_class_support = {str(label): int(support[index]) for index, label in enumerate(label_list)}
     return {
         "n": int(len(truth)),
         "accuracy": float(accuracy_score(truth, pred)),
         "balanced_accuracy": float(present.mean()) if present.size else None,
         "macro_f1": float(f1_score(truth, pred, labels=label_list, average="macro", zero_division=0)),
+        "per_class_recall": per_class_recall,
+        "per_class_support": per_class_support,
         "confusion_matrix": {"labels": [str(label) for label in label_list], "matrix": matrix.tolist()},
     }
 
@@ -69,6 +78,223 @@ def ordinal_metrics(y_true: Sequence[int], y_pred: Sequence[int]) -> dict[str, A
         "accuracy": float(np.mean(error == 0)),
         "mae": float(np.mean(error)),
         "within_1_accuracy": float(np.mean(error <= 1)),
+    }
+
+
+def bootstrap_ci(
+    samples: Sequence[float | None],
+    alpha: float = 0.05,
+) -> dict[str, Any]:
+    """Percentile interval from already-drawn bootstrap replicates."""
+    values = [float(value) for value in samples if value is not None and value == value]
+    if not values:
+        return {
+            "n_boot": 0,
+            "mean": None,
+            "ci_low": None,
+            "ci_high": None,
+            "alpha": float(alpha),
+        }
+    low = 100.0 * (alpha / 2.0)
+    high = 100.0 * (1.0 - alpha / 2.0)
+    return {
+        "n_boot": int(len(values)),
+        "mean": float(np.mean(values)),
+        "ci_low": float(np.percentile(values, low)),
+        "ci_high": float(np.percentile(values, high)),
+        "alpha": float(alpha),
+    }
+
+
+def bootstrap_macro_f1(
+    y_true: Sequence[Any],
+    y_pred: Sequence[Any],
+    labels: Sequence[Any],
+    n_boot: int = 1000,
+    seed: int = 42,
+    alpha: float = 0.05,
+) -> dict[str, Any]:
+    """Garment-level bootstrap CI for macro-F1. Each row is one garment."""
+    truth = np.asarray(list(y_true), dtype=object)
+    pred = np.asarray(list(y_pred), dtype=object)
+    label_list = list(labels)
+    n = int(truth.size)
+    point = (
+        float(f1_score(truth, pred, labels=label_list, average="macro", zero_division=0)) if n else None
+    )
+    if n == 0:
+        return {"point": None, "n_garments": 0, **bootstrap_ci([], alpha=alpha)}
+    rng = np.random.default_rng(seed)
+    draws: list[float] = []
+    indices = np.arange(n)
+    for _ in range(int(n_boot)):
+        sample = rng.choice(indices, size=n, replace=True)
+        draws.append(
+            float(
+                f1_score(
+                    truth[sample],
+                    pred[sample],
+                    labels=label_list,
+                    average="macro",
+                    zero_division=0,
+                )
+            )
+        )
+    return {"point": point, "n_garments": n, **bootstrap_ci(draws, alpha=alpha)}
+
+
+def bootstrap_class_recall(
+    y_true: Sequence[Any],
+    y_pred: Sequence[Any],
+    class_label: Any,
+    n_boot: int = 1000,
+    seed: int = 42,
+    alpha: float = 0.05,
+) -> dict[str, Any]:
+    """Garment-level bootstrap CI for recall of one class (e.g. holes Major)."""
+    truth = np.asarray(list(y_true), dtype=object)
+    pred = np.asarray(list(y_pred), dtype=object)
+    mask = truth == class_label
+    support = int(mask.sum())
+    if support == 0:
+        return {
+            "class": str(class_label),
+            "point": None,
+            "n_support": 0,
+            "n_garments": int(truth.size),
+            **bootstrap_ci([], alpha=alpha),
+        }
+    point = float((pred[mask] == class_label).mean())
+    rng = np.random.default_rng(seed)
+    draws: list[float | None] = []
+    positive = np.flatnonzero(mask)
+    for _ in range(int(n_boot)):
+        sample = rng.choice(positive, size=support, replace=True)
+        draws.append(float((pred[sample] == class_label).mean()))
+    return {
+        "class": str(class_label),
+        "point": point,
+        "n_support": support,
+        "n_garments": int(truth.size),
+        **bootstrap_ci(draws, alpha=alpha),
+    }
+
+
+def bootstrap_pairwise_kappa(
+    frame: pd.DataFrame,
+    column: str,
+    n_boot: int = 1000,
+    seed: int = 42,
+    alpha: float = 0.05,
+    quadratic: bool = False,
+) -> dict[str, Any]:
+    """Garment-level bootstrap CI for expert-versus-expert pairwise kappa."""
+    point = pairwise_kappa(frame, column, quadratic=quadratic)
+    key = "cohen_kappa_quadratic" if quadratic else "cohen_kappa"
+    if "gold_id" not in frame.columns or column not in frame.columns:
+        return {"point": point.get(key), "n_garments": 0, **bootstrap_ci([], alpha=alpha), "full": point}
+    work = frame[frame["gold_id"].notna() & frame["gold_id"].astype(str).str.len().gt(0)].copy()
+    work["gold_id"] = work["gold_id"].astype(str)
+    groups = {gold_id: group for gold_id, group in work.groupby("gold_id", sort=False)}
+    gold_ids = list(groups)
+    if not gold_ids:
+        return {"point": point.get(key), "n_garments": 0, **bootstrap_ci([], alpha=alpha), "full": point}
+    rng = np.random.default_rng(seed)
+    draws: list[float | None] = []
+    for _ in range(int(n_boot)):
+        sample_ids = rng.choice(gold_ids, size=len(gold_ids), replace=True)
+        chunks = []
+        for index, gold_id in enumerate(sample_ids):
+            chunk = groups[str(gold_id)].copy()
+            chunk["gold_id"] = f"{gold_id}__{index}"
+            chunks.append(chunk)
+        sampled = pd.concat(chunks, ignore_index=True)
+        draws.append(pairwise_kappa(sampled, column, quadratic=quadratic).get(key))
+    return {
+        "point": point.get(key),
+        "n_garments": int(len(gold_ids)),
+        **bootstrap_ci(draws, alpha=alpha),
+        "full": point,
+    }
+
+
+def bootstrap_model_vs_site_kappas(
+    gold: pd.DataFrame,
+    prediction_by_item: dict[str, dict[str, Any]],
+    n_boot: int = 1000,
+    seed: int = 42,
+    alpha: float = 0.05,
+) -> dict[str, Any]:
+    """Garment-level bootstrap CIs for model-versus-Wargön and model-versus-Myrorna kappa."""
+    point = model_vs_site_from_wargon_photos(gold, prediction_by_item)
+    photo_ids = list((point.get("photo_item_ids") or {}).keys())
+    work = gold[gold["gold_id"].notna() & gold["gold_id"].astype(str).str.len().gt(0)].copy()
+    work["gold_id"] = work["gold_id"].astype(str)
+    groups = {gold_id: group for gold_id, group in work.groupby("gold_id", sort=False)}
+    usable = [gold_id for gold_id in photo_ids if gold_id in groups]
+    empty = bootstrap_ci([], alpha=alpha)
+    if not usable:
+        return {
+            "model_vs_wargon_usage": {"point": None, "n_garments": 0, **empty},
+            "model_vs_wargon_condition_quadratic": {"point": None, "n_garments": 0, **empty},
+            "model_vs_myrorna_usage": {"point": None, "n_garments": 0, **empty},
+            "model_vs_myrorna_condition_quadratic": {"point": None, "n_garments": 0, **empty},
+            "point": point,
+        }
+    rng = np.random.default_rng(seed)
+    buckets = {
+        "model_vs_wargon_usage": [],
+        "model_vs_wargon_condition_quadratic": [],
+        "model_vs_myrorna_usage": [],
+        "model_vs_myrorna_condition_quadratic": [],
+    }
+    for _ in range(int(n_boot)):
+        sample_ids = rng.choice(usable, size=len(usable), replace=True)
+        chunks = []
+        for index, gold_id in enumerate(sample_ids):
+            chunk = groups[str(gold_id)].copy()
+            chunk["gold_id"] = f"{gold_id}__{index}"
+            chunks.append(chunk)
+        sampled = pd.concat(chunks, ignore_index=True)
+        scored = model_vs_site_from_wargon_photos(sampled, prediction_by_item)
+        buckets["model_vs_wargon_usage"].append(
+            ((scored.get("model_vs_wargon") or {}).get("usage") or {}).get("cohen_kappa")
+        )
+        buckets["model_vs_wargon_condition_quadratic"].append(
+            ((scored.get("model_vs_wargon") or {}).get("condition") or {}).get("cohen_kappa_quadratic")
+        )
+        buckets["model_vs_myrorna_usage"].append(
+            ((scored.get("model_vs_myrorna") or {}).get("usage") or {}).get("cohen_kappa")
+        )
+        buckets["model_vs_myrorna_condition_quadratic"].append(
+            ((scored.get("model_vs_myrorna") or {}).get("condition") or {}).get("cohen_kappa_quadratic")
+        )
+    return {
+        "model_vs_wargon_usage": {
+            "point": ((point.get("model_vs_wargon") or {}).get("usage") or {}).get("cohen_kappa"),
+            "n_garments": int(len(usable)),
+            **bootstrap_ci(buckets["model_vs_wargon_usage"], alpha=alpha),
+        },
+        "model_vs_wargon_condition_quadratic": {
+            "point": ((point.get("model_vs_wargon") or {}).get("condition") or {}).get(
+                "cohen_kappa_quadratic"
+            ),
+            "n_garments": int(len(usable)),
+            **bootstrap_ci(buckets["model_vs_wargon_condition_quadratic"], alpha=alpha),
+        },
+        "model_vs_myrorna_usage": {
+            "point": ((point.get("model_vs_myrorna") or {}).get("usage") or {}).get("cohen_kappa"),
+            "n_garments": int(len(usable)),
+            **bootstrap_ci(buckets["model_vs_myrorna_usage"], alpha=alpha),
+        },
+        "model_vs_myrorna_condition_quadratic": {
+            "point": ((point.get("model_vs_myrorna") or {}).get("condition") or {}).get(
+                "cohen_kappa_quadratic"
+            ),
+            "n_garments": int(len(usable)),
+            **bootstrap_ci(buckets["model_vs_myrorna_condition_quadratic"], alpha=alpha),
+        },
+        "point": point,
     }
 
 
@@ -297,3 +523,108 @@ def site_label_agreement(frame: Any) -> dict[str, Any]:
         **view_counts,
     }
     return report
+
+
+WARGON_STATIONS = frozenset({"station1", "station2"})
+MYRORNA_STATIONS = frozenset({"station3"})
+WARGON_PHOTO_NOTE = (
+    "Myrorna's gold photographs are missing from the archive, so its annotations "
+    "are scored using the Wargön photograph of the same garment."
+)
+
+
+def _present_label(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, float) and value != value:
+        return None
+    text = str(value).strip()
+    if not text or text.lower() == "nan":
+        return None
+    return value
+
+
+def _label_kappa(truth: list[Any], pred: list[Any], quadratic: bool = False) -> dict[str, Any]:
+    report: dict[str, Any] = {
+        "n_pairs": int(len(truth)),
+        "raw_agreement": None,
+        "cohen_kappa": None,
+    }
+    if quadratic:
+        report["cohen_kappa_quadratic"] = None
+    if not truth:
+        return report
+    report["raw_agreement"] = float(np.mean([left == right for left, right in zip(truth, pred)]))
+    if len(set(truth)) > 1 and len(set(pred)) > 1:
+        report["cohen_kappa"] = float(cohen_kappa_score(truth, pred))
+        if quadratic:
+            report["cohen_kappa_quadratic"] = float(cohen_kappa_score(truth, pred, weights="quadratic"))
+    return report
+
+
+def model_vs_site_from_wargon_photos(
+    gold: pd.DataFrame,
+    prediction_by_item: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Score one Wargön-photo prediction per garment against each site's labels.
+
+    ``prediction_by_item`` is keyed by annotation ``item_id``. Only Wargön rows
+    (station 1 and 2) may supply the photograph. Myrorna rows are labels only.
+    """
+    work = gold[gold["gold_id"].notna() & gold["gold_id"].astype(str).str.len().gt(0)].copy()
+    work["gold_id"] = work["gold_id"].astype(str)
+    if "usage_class" not in work.columns:
+        work["usage_class"] = work["usage"].map(usage_class)
+    photo_by_gold: dict[str, dict[str, Any]] = {}
+    wargon = work[work["station"].isin(WARGON_STATIONS)].sort_values("item_id")
+    for gold_id, group in wargon.groupby("gold_id", sort=False):
+        for item_id in group["item_id"].astype(str):
+            row = prediction_by_item.get(item_id)
+            if row is None:
+                continue
+            photo_by_gold[str(gold_id)] = {
+                "item_id": item_id,
+                "usage": row.get("usage"),
+                "condition": row.get("condition"),
+            }
+            break
+    site_truth: dict[str, dict[str, list[Any]]] = {
+        "wargon": {"usage": [], "usage_pred": [], "condition": [], "condition_pred": []},
+        "myrorna": {"usage": [], "usage_pred": [], "condition": [], "condition_pred": []},
+    }
+    station_sets = {"wargon": WARGON_STATIONS, "myrorna": MYRORNA_STATIONS}
+    for gold_id, group in work.groupby("gold_id", sort=False):
+        photo = photo_by_gold.get(str(gold_id))
+        if photo is None:
+            continue
+        for site, stations in station_sets.items():
+            for record in group[group["station"].isin(stations)].to_dict("records"):
+                usage = _present_label(record.get("usage_class"))
+                if usage is not None and photo.get("usage") is not None:
+                    site_truth[site]["usage"].append(usage)
+                    site_truth[site]["usage_pred"].append(photo["usage"])
+                condition = _present_label(record.get("condition"))
+                if condition is not None and photo.get("condition") is not None:
+                    site_truth[site]["condition"].append(int(condition))
+                    site_truth[site]["condition_pred"].append(int(photo["condition"]))
+    return {
+        "note": WARGON_PHOTO_NOTE,
+        "n_garments_with_wargon_photos": int(len(photo_by_gold)),
+        "photo_item_ids": {gold_id: row["item_id"] for gold_id, row in photo_by_gold.items()},
+        "model_vs_wargon": {
+            "usage": _label_kappa(site_truth["wargon"]["usage"], site_truth["wargon"]["usage_pred"]),
+            "condition": _label_kappa(
+                site_truth["wargon"]["condition"],
+                site_truth["wargon"]["condition_pred"],
+                quadratic=True,
+            ),
+        },
+        "model_vs_myrorna": {
+            "usage": _label_kappa(site_truth["myrorna"]["usage"], site_truth["myrorna"]["usage_pred"]),
+            "condition": _label_kappa(
+                site_truth["myrorna"]["condition"],
+                site_truth["myrorna"]["condition_pred"],
+                quadratic=True,
+            ),
+        },
+    }

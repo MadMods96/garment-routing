@@ -2,7 +2,12 @@
 
 import numpy as np
 
-from garmentroute.uncertainty import coverage_accuracy, expected_calibration_error, select_threshold
+from garmentroute.uncertainty import (
+    coverage_accuracy,
+    expected_calibration_error,
+    fit_temperature,
+    select_threshold,
+)
 
 
 def test_matching_confidence_and_accuracy_has_zero_ece():
@@ -24,3 +29,11 @@ def test_threshold_is_chosen_only_from_the_rows_it_is_given():
     chosen = select_threshold(confidences, correct, min_coverage=0.5)
     assert chosen["threshold"] == 0.8
     assert chosen["accuracy"] == 1
+
+
+def test_temperature_fit_clamps_away_from_zero():
+    logits = np.asarray([[8.0, 0.0, -2.0, -3.0]] * 40, dtype=float)
+    labels = [0] * 40
+    temperature = fit_temperature(logits, labels, steps=50)
+    assert 0.05 <= temperature <= 20.0
+
